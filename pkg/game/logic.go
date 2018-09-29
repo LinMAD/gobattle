@@ -1,7 +1,7 @@
 package game
 
 // BattleGround play map stores max values of X,Y in axis
-type BattleGround struct {
+type BattleField struct {
 	MapSettings Coordinate
 }
 
@@ -24,8 +24,8 @@ type Coordinate struct {
 }
 
 // NewBattleGround
-func NewBattleGround(x, y uint8) *BattleGround {
-	return &BattleGround{
+func NewBattleGround(x, y uint8) *BattleField {
+	return &BattleField{
 		MapSettings: Coordinate{
 			AxisX: x,
 			AxisY: y,

@@ -2,6 +2,7 @@ package game
 
 import (
 	"container/list"
+	"fmt"
 )
 
 // WarRoomMediator
@@ -20,20 +21,32 @@ func NewWarRoom() *WarRoom {
 	return &WarRoom{players: list.New()}
 }
 
-// AddPlayer to room
-func (room *WarRoom) AddPlayer(newPlayer PlayerColleague) {
-	isAdded := false
+// AddPlayer to room with his fleet
+func (room *WarRoom) AddPlayer(newPlayer string, fleet []Ship) error {
+	isAdded := room.findPlayer(newPlayer)
+	if isAdded != nil {
+		return fmt.Errorf("player must be unique in room")
+	}
 
-	// Check if player already added
-	for player := room.players.Front(); player != nil; player = player.Next() {
-		if player.Value.(PlayerColleague).GetName() == newPlayer.GetName() {
-			isAdded = true
+	p, err := NewPlayer(newPlayer, fleet)
+	if err != nil {
+		return err
+	}
+
+	room.players.PushBack(p)
+
+	return nil
+}
+
+// findPlayer in current room
+func (room *WarRoom) findPlayer(playerName string) PlayerColleague {
+	for p := room.players.Front(); p != nil; p = p.Next() {
+		if p.Value.(PlayerColleague).GetName() == playerName {
+			return p.Value.(PlayerColleague)
 		}
 	}
 
-	if !isAdded {
-		room.players.PushBack(newPlayer)
-	}
+	return nil
 }
 
 // TODO Implement turn based Q for players
