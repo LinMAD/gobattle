@@ -1,5 +1,7 @@
 package game
 
+import "fmt"
+
 // BattleGround play map stores max values of X,Y in axis
 type BattleField struct {
 	MapSettings Coordinate
@@ -7,8 +9,6 @@ type BattleField struct {
 
 // Ship structure
 type Ship struct {
-	// Size of ship, how many cells it takes
-	Size uint8
 	// IsAlive status whole ship
 	IsAlive bool
 	// Location list of coordinates where ship located
@@ -31,4 +31,56 @@ func NewBattleGround(x, y uint8) *BattleField {
 			AxisY: y,
 		},
 	}
+}
+
+// ValidateFleetCollision return error with location if they collides
+func (bf *BattleField) ValidateFleetCollision(fleet []Ship) error {
+	if len(fleet) <= 1 {
+		return nil
+	}
+
+	for _, ship := range fleet {
+		for _, nextShip := range fleet {
+			if isCollides(ship, nextShip) {
+				return fmt.Errorf(
+					"collision found in fleet. Ship: %v and Ship: %v", ship.Location, nextShip.Location,
+				)
+			}
+		}
+	}
+
+	return nil
+}
+
+// isCollides checks if ships encounter each other on top\bottom\same or even with corners
+func isCollides(a Ship, b Ship) (isCollides bool) {
+	for _, aShip := range a.Location {
+		for _, bShip := range b.Location {
+			if aShip.AxisX == bShip.AxisX && aShip.AxisY != bShip.AxisY {
+				return true
+			}
+			if aShip.AxisX != bShip.AxisX && aShip.AxisY == bShip.AxisY {
+				return true
+			}
+			if aShip.AxisX == bShip.AxisX && aShip.AxisY == bShip.AxisY {
+				return true
+			}
+
+			if int8(aShip.AxisX + 1) == int8(bShip.AxisX) || int8(aShip.AxisX + 2) == int8(bShip.AxisX)  {
+				return true
+			}
+			if int8(aShip.AxisX - 1) == int8(bShip.AxisX) || int8(aShip.AxisX - 2) == int8(bShip.AxisX)  {
+				return true
+			}
+
+			if int8(aShip.AxisY + 1) == int8(bShip.AxisY) || int8(aShip.AxisY + 2) == int8(bShip.AxisY)  {
+				return true
+			}
+			if int8(aShip.AxisY - 1) == int8(bShip.AxisY) || int8(aShip.AxisY - 2) == int8(bShip.AxisY)  {
+				return true
+			}
+		}
+	}
+
+	return false
 }

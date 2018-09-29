@@ -21,13 +21,25 @@ type Player struct {
 
 // NewPlayer
 func NewPlayer(name string, fleet []Ship) (p *Player, err error) {
-	p = &Player{name: name}
+	p = &Player{
+		name:        name,
+		battleField: NewBattleGround(10, 10),
+	}
 
 	if len(fleet) == 0 {
 		return nil, fmt.Errorf("player fleet cannot be empty")
 	}
 
-	// TODO Validate fleet position, if they can be placed by game rules
+	for _, ship := range fleet {
+		if len(ship.Location) == 0 {
+			return nil, fmt.Errorf("one of the ship in fleet has empty location")
+		}
+	}
+
+	if isCorrect := p.battleField.ValidateFleetCollision(fleet); isCorrect != nil {
+		return nil, isCorrect
+	}
+
 	p.playerFleet = fleet
 
 	return p, nil
