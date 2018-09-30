@@ -5,7 +5,7 @@ import (
 )
 
 func TestNewBattleGround(t *testing.T) {
-	bg := NewBattleGround(5,5)
+	bg := NewBattleGround(5, 5)
 	if bg.MapSettings.AxisX != 5 || bg.MapSettings.AxisY != 5 {
 		t.Error("New battle ground size not same as given")
 	}
@@ -16,9 +16,9 @@ func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
 		var s1, s2 Ship
 		var fleet []Ship
 
-		s1 = Ship{IsAlive:  true}
+		s1 = Ship{IsAlive: true}
 		s1.Location = append(s1.Location, s1Loc)
-		s2 = Ship{IsAlive:  true}
+		s2 = Ship{IsAlive: true}
 		s2.Location = append(s2.Location, s2Loc)
 
 		fleet = append(fleet, s1)
@@ -38,7 +38,7 @@ func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
 	// Validate collision check on top
 	for i := 1; i <= 4; i++ {
 		c1 := Coordinate{AxisX: uint8(i), AxisY: uint8(i)}
-		c2 := Coordinate{AxisX: uint8(i+1), AxisY: uint8(i+1)}
+		c2 := Coordinate{AxisX: uint8(i + 1), AxisY: uint8(i + 1)}
 
 		badFleet := bf.ValidateFleetCollision(getFleet(c1, c2))
 		if badFleet == nil {
@@ -48,7 +48,7 @@ func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
 	// Validate collision check on bottom
 	for i := 1; i <= 4; i++ {
 		c1 := Coordinate{AxisX: uint8(i), AxisY: uint8(i)}
-		c2 := Coordinate{AxisX: uint8(i-1), AxisY: uint8(i-1)}
+		c2 := Coordinate{AxisX: uint8(i - 1), AxisY: uint8(i - 1)}
 
 		badFleet := bf.ValidateFleetCollision(getFleet(c1, c2))
 		if badFleet == nil {
@@ -67,7 +67,7 @@ func TestBattleField_ValidateFleetCollision_Cornered(t *testing.T) {
 			list = append(list, v)
 		}
 
-		return Ship{IsAlive:  true, Location: list}
+		return Ship{IsAlive: true, Location: list}
 	}
 	createFleet := func(ship ...Ship) []Ship {
 		fleet := make([]Ship, 0)

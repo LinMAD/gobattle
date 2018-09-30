@@ -66,17 +66,17 @@ func isCollides(a Ship, b Ship) (isCollides bool) {
 				return true
 			}
 
-			if int8(aShip.AxisX + 1) == int8(bShip.AxisX) || int8(aShip.AxisX + 2) == int8(bShip.AxisX)  {
+			if int8(aShip.AxisX+1) == int8(bShip.AxisX) || int8(aShip.AxisX+2) == int8(bShip.AxisX) {
 				return true
 			}
-			if int8(aShip.AxisX - 1) == int8(bShip.AxisX) || int8(aShip.AxisX - 2) == int8(bShip.AxisX)  {
+			if int8(aShip.AxisX-1) == int8(bShip.AxisX) || int8(aShip.AxisX-2) == int8(bShip.AxisX) {
 				return true
 			}
 
-			if int8(aShip.AxisY + 1) == int8(bShip.AxisY) || int8(aShip.AxisY + 2) == int8(bShip.AxisY)  {
+			if int8(aShip.AxisY+1) == int8(bShip.AxisY) || int8(aShip.AxisY+2) == int8(bShip.AxisY) {
 				return true
 			}
-			if int8(aShip.AxisY - 1) == int8(bShip.AxisY) || int8(aShip.AxisY - 2) == int8(bShip.AxisY)  {
+			if int8(aShip.AxisY-1) == int8(bShip.AxisY) || int8(aShip.AxisY-2) == int8(bShip.AxisY) {
 				return true
 			}
 		}
