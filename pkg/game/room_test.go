@@ -16,7 +16,7 @@ func TestNewWarRoom(t *testing.T) {
 	}
 
 	p1Fleet = append(p1Fleet, Ship{})
-	p1Fleet[0].Location = append(p1Fleet[0].Location, Coordinate{1,1})
+	p1Fleet[0].Location = append(p1Fleet[0].Location, Coordinate{1, 1})
 	addErr = wr.AddPlayer(p1, p1Fleet)
 	if wr.players.Len() != 1 {
 		t.Error("Expected to be added 1 player to room")
@@ -31,7 +31,7 @@ func TestNewWarRoom(t *testing.T) {
 	}
 
 	p2Fleet := make([]Ship, 1)
-	p2Fleet[0].Location = append(p1Fleet[0].Location, Coordinate{1,1})
+	p2Fleet[0].Location = append(p1Fleet[0].Location, Coordinate{1, 1})
 	p2 := "P2"
 	wr.AddPlayer(p2, p2Fleet)
 	if wr.players.Len() != 2 {
