@@ -7,8 +7,10 @@ import (
 
 // WarRoomMediator
 type WarRoomMediator interface {
-	// AddPlayer to room
-	AddPlayer()
+	// JoinPlayer to room
+	JoinPlayer(p *Player) error
+	// MakeTurn of active player
+	MakeTurn(p *Player)
 }
 
 // WarRoom
@@ -21,16 +23,11 @@ func NewWarRoom() *WarRoom {
 	return &WarRoom{players: list.New()}
 }
 
-// AddPlayer to room with his fleet
-func (room *WarRoom) AddPlayer(newPlayer string, fleet []Ship) error {
-	isAdded := room.findPlayer(newPlayer)
+// JoinPlayer to room with his fleet
+func (room *WarRoom) JoinPlayer(p *Player) error {
+	isAdded := room.findPlayer(p.name)
 	if isAdded != nil {
 		return fmt.Errorf("player must be unique in room")
-	}
-
-	p, err := NewPlayer(newPlayer, fleet)
-	if err != nil {
-		return err
 	}
 
 	room.players.PushBack(p)
@@ -39,14 +36,21 @@ func (room *WarRoom) AddPlayer(newPlayer string, fleet []Ship) error {
 }
 
 // findPlayer in current room
-func (room *WarRoom) findPlayer(playerName string) PlayerColleague {
+func (room *WarRoom) findPlayer(playerName string) *Player {
 	for p := room.players.Front(); p != nil; p = p.Next() {
-		if p.Value.(PlayerColleague).GetName() == playerName {
-			return p.Value.(PlayerColleague)
+		if p.Value.(*Player).name == playerName {
+			return p.Value.(*Player)
 		}
 	}
 
 	return nil
 }
 
-// TODO Implement turn based Q for players
+// MakeTurn for player
+func (room *WarRoom) MakeTurn(p *Player) {
+	//target := p.lastFireCoordinate
+	// TODO Get opponent ships and hit ships if target correct
+	// TODO Return result of shooting, like miss, hit or kill
+
+	// TODO Implement turn based Q for players
+}

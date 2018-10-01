@@ -4,13 +4,9 @@ import "fmt"
 
 const (
 	// General runes in communication, ships locations and part separator
-	MSG_DELIMITER rune = 45 // "-"
-	MSG_NONE      rune = 0  // "0"
-	MSG_SHIP      rune = 49 // "1"
-	// TODO Put correct runes
-	// Shooting
-	GUN_SHOOT_MISS rune = 0 // "1"
-	GUN_SHOOT_HIT  rune = 0 // "2"
+	MsgDelimiter rune = 45 // "-"
+	MsgNone      rune = 48 // "0"
+	MsgShip      rune = 49 // "1"
 )
 
 // BattleGround play map stores max values of X,Y in axis
@@ -34,8 +30,8 @@ type Coordinate struct {
 	AxisY uint8
 }
 
-// NewBattleGround
-func NewBattleGround(x, y uint8) *BattleField {
+// newBattleGround
+func newBattleGround(x, y uint8) *BattleField {
 	return &BattleField{
 		MapSettings: Coordinate{
 			AxisX: x,

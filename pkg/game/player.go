@@ -6,24 +6,29 @@ import "fmt"
 type PlayerColleague interface {
 	GetName() string
 	GetFleet() []Ship
-	GetBattleField() *BattleField
+	GetLastGunShootCoordinate() *Coordinate
+	GunShoot(c Coordinate)
 }
 
-// Player represents size of playing field in x,y coordinate axis
 type Player struct {
 	// name of player
 	name string
 	// playerFleet stores all available fleet for player
-	playerFleet []Ship
+	fleet []Ship
 	// battleField
 	battleField *BattleField
+	// room where player joined
+	room WarRoomMediator
+	// lastFireCoordinate place where was gun shoot
+	lastFireCoordinate *Coordinate
 }
 
 // NewPlayer
-func NewPlayer(name string, fleet []Ship) (p *Player, err error) {
+func NewPlayer(name string, fleet []Ship, warRoom WarRoomMediator) (p *Player, err error) {
 	p = &Player{
 		name:        name,
-		battleField: NewBattleGround(10, 10),
+		battleField: newBattleGround(10, 10),
+		room:        warRoom,
 	}
 
 	if len(fleet) == 0 {
@@ -40,7 +45,8 @@ func NewPlayer(name string, fleet []Ship) (p *Player, err error) {
 		return nil, isCorrect
 	}
 
-	p.playerFleet = fleet
+	p.fleet = fleet
+	p.room.JoinPlayer(p)
 
 	return p, nil
 }
@@ -52,10 +58,16 @@ func (p *Player) GetName() string {
 
 // GetFleet of valid ships
 func (p *Player) GetFleet() []Ship {
-	return p.playerFleet
+	return p.fleet
 }
 
-// GetBattleField
-func (p *Player) GetBattleField() *BattleField {
-	return p.battleField
+// GunShoot
+func (p *Player) GunShoot(target Coordinate) {
+	p.lastFireCoordinate = &target
+
+	p.room.MakeTurn(p)
+}
+
+func (p *Player) GetLastGunShootCoordinate() *Coordinate {
+	return p.lastFireCoordinate
 }
