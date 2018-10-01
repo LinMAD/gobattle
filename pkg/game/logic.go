@@ -2,6 +2,17 @@ package game
 
 import "fmt"
 
+const (
+	// General runes in communication, ships locations and part separator
+	MSG_DELIMITER rune = 45 // "-"
+	MSG_NONE      rune = 0  // "0"
+	MSG_SHIP      rune = 49 // "1"
+	// TODO Put correct runes
+	// Shooting
+	GUN_SHOOT_MISS rune = 0 // "1"
+	GUN_SHOOT_HIT  rune = 0 // "2"
+)
+
 // BattleGround play map stores max values of X,Y in axis
 type BattleField struct {
 	MapSettings Coordinate
