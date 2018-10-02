@@ -82,7 +82,7 @@ func handleCommonError(err error, t *testing.T) {
 	}
 }
 
-func validateLocationFleet(expectedShips int, fleet []game.Ship, expectedCoordinates ...game.Coordinate) error {
+func validateLocationFleet(expectedShips int, fleet []*game.Ship, expectedCoordinates ...game.Coordinate) error {
 	if len(fleet) != expectedShips {
 		return fmt.Errorf("expected size of the fleet %d (ships) but it's: %d (ships)", expectedShips, len(fleet))
 	}

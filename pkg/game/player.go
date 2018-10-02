@@ -5,16 +5,17 @@ import "fmt"
 // PlayerColleague
 type PlayerColleague interface {
 	GetName() string
-	GetFleet() []Ship
+	GetFleet() []*Ship
 	GetLastGunShootCoordinate() *Coordinate
-	GunShoot(c Coordinate)
+	GunShoot(c Coordinate) bool
 }
 
+// Player
 type Player struct {
 	// name of player
 	name string
 	// playerFleet stores all available fleet for player
-	fleet []Ship
+	fleet []*Ship
 	// battleField
 	battleField *BattleField
 	// room where player joined
@@ -24,7 +25,7 @@ type Player struct {
 }
 
 // NewPlayer
-func NewPlayer(name string, fleet []Ship, warRoom WarRoomMediator) (p *Player, err error) {
+func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, err error) {
 	p = &Player{
 		name:        name,
 		battleField: newBattleGround(10, 10),
@@ -57,17 +58,18 @@ func (p *Player) GetName() string {
 }
 
 // GetFleet of valid ships
-func (p *Player) GetFleet() []Ship {
+func (p *Player) GetFleet() []*Ship {
 	return p.fleet
 }
 
-// GunShoot
-func (p *Player) GunShoot(target Coordinate) {
+// GunShoot try hit target with given coordinates
+func (p *Player) GunShoot(target Coordinate) bool {
 	p.lastFireCoordinate = &target
 
-	p.room.MakeTurn(p)
+	return p.room.MakeTurn(p)
 }
 
+// GetLastGunShootCoordinate return last coordinate of firing
 func (p *Player) GetLastGunShootCoordinate() *Coordinate {
 	return p.lastFireCoordinate
 }
