@@ -4,21 +4,66 @@ import (
 	"testing"
 )
 
+func TestShip_hitShip(t *testing.T) {
+	var l1, l2, fireLoc Coordinate
+	var ship *Ship
+
+	l1 = Coordinate{5, 5}
+	l2 = Coordinate{5, 6}
+
+	ship = helpCreateShip(l1, l2)
+	fireLoc = Coordinate{5, 6}
+	if ship.isHit(&fireLoc) == false {
+		t.Error("Expected to be damaged ship, coordinates are correct")
+	}
+	fireLoc = Coordinate{5, 7}
+	if ship.isHit(&fireLoc) {
+		t.Error("Expected to be miss, coordinates are different from the ship")
+	}
+}
+
+func TestShip_isStillAlive(t *testing.T) {
+	var l1, l2 Coordinate
+	var ship *Ship
+
+	l1 = Coordinate{AxisX: 1, AxisY: 1}
+	l2 = Coordinate{AxisX: 2, AxisY: 1}
+
+	ship = helpCreateShip(l1, l2)
+	if ship.isStillAlive() == false {
+		t.Error("Expected alive ship")
+	}
+
+	l1 = Coordinate{AxisX: 1, AxisY: 1}
+	l2 = Coordinate{AxisX: -1, AxisY: -1}
+	ship = helpCreateShip(l1, l2)
+	if ship.isStillAlive() == false {
+		t.Error("Expected alive ship even if its damaged")
+	}
+
+	l1 = Coordinate{AxisX: -1, AxisY: -1}
+	l2 = Coordinate{AxisX: -1, AxisY: -1}
+	ship = helpCreateShip(l1, l2)
+	if ship.isStillAlive() {
+		t.Error("Expected to be destroyed ship, all locations are negative")
+	}
+}
+
 func TestNewBattleGround(t *testing.T) {
-	bg := NewBattleGround(5, 5)
+	bg := newBattleGround(5, 5)
 	if bg.MapSettings.AxisX != 5 || bg.MapSettings.AxisY != 5 {
 		t.Error("New battle ground size not same as given")
 	}
 }
 
 func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
-	getFleet := func(s1Loc, s2Loc Coordinate) []Ship {
-		var s1, s2 Ship
-		var fleet []Ship
+	getFleet := func(s1Loc, s2Loc Coordinate) []*Ship {
+		var s1, s2 *Ship
+		var fleet []*Ship
 
-		s1 = Ship{IsAlive: true}
+		s1 = &Ship{IsAlive: true}
 		s1.Location = append(s1.Location, s1Loc)
-		s2 = Ship{IsAlive: true}
+		s2 = &Ship{IsAlive: true}
 		s2.Location = append(s2.Location, s2Loc)
 
 		fleet = append(fleet, s1)
@@ -74,10 +119,10 @@ func TestBattleField_ValidateFleetCollision_Cornered(t *testing.T) {
 		t.Error("Expected error, ships collides on corner on X3-4-5")
 	}
 
-	s8 := helpCreateShip(Coordinate{AxisX: 2, AxisY: 3})
+	s8 := helpCreateShip(Coordinate{AxisX: 3, AxisY: 3})
 	isCollides = bf.ValidateFleetCollision(helpCreateFleet(s2, s8))
 	if isCollides == nil {
-		t.Error("Expected error, 2 ships collides on corner on Y3 and Y4")
+		t.Error("Expected error, 2 ships collides on corner X,Y 3 and X,Y 4")
 	}
 }
 
@@ -101,17 +146,21 @@ func TestBattleField_ValidateFleetCollision_CorrectFleet(t *testing.T) {
 	}
 }
 
-func helpCreateShip(coordinates ...Coordinate) Ship {
+// TODO Think about to add it to generator
+
+// helpCreateShip simple structure generator for ship
+func helpCreateShip(coordinates ...Coordinate) *Ship {
 	list := make([]Coordinate, 0)
 	for _, v := range coordinates {
 		list = append(list, v)
 	}
 
-	return Ship{IsAlive: true, Location: list}
+	return &Ship{IsAlive: true, Location: list}
 }
 
-func helpCreateFleet(ship ...Ship) []Ship {
-	fleet := make([]Ship, 0)
+// helpCreateFleet simple structure generator for fleet
+func helpCreateFleet(ship ...*Ship) []*Ship {
+	fleet := make([]*Ship, 0)
 	for _, s := range ship {
 		fleet = append(fleet, s)
 	}

@@ -1,52 +1,67 @@
 package game
 
 import (
-	"container/list"
 	"fmt"
 )
 
 // WarRoomMediator
 type WarRoomMediator interface {
-	// AddPlayer to room
-	AddPlayer()
+	// JoinPlayer to room
+	JoinPlayer(p *Player) error
+	// MakeTurn for player and return if he succeed
+	MakeTurn(p *Player) bool
 }
 
 // WarRoom
 type WarRoom struct {
-	players *list.List
+	players []*Player
 }
 
 // NewWarRoom
 func NewWarRoom() *WarRoom {
-	return &WarRoom{players: list.New()}
+	return &WarRoom{players: make([]*Player, 0)}
 }
 
-// AddPlayer to room with his fleet
-func (room *WarRoom) AddPlayer(newPlayer string, fleet []Ship) error {
-	isAdded := room.findPlayer(newPlayer)
-	if isAdded != nil {
-		return fmt.Errorf("player must be unique in room")
+// JoinPlayer to room with his fleet
+func (room *WarRoom) JoinPlayer(newPlayer *Player) error {
+	if len(room.players) == 2 {
+		return fmt.Errorf("in room can be only 2 players")
 	}
 
-	p, err := NewPlayer(newPlayer, fleet)
-	if err != nil {
-		return err
+	for _, inPlayerRoom := range room.players {
+		if inPlayerRoom.name == newPlayer.name {
+			return fmt.Errorf("player must be unique in room")
+		}
 	}
 
-	room.players.PushBack(p)
+	room.players = append(room.players, newPlayer)
 
 	return nil
 }
 
-// findPlayer in current room
-func (room *WarRoom) findPlayer(playerName string) PlayerColleague {
-	for p := room.players.Front(); p != nil; p = p.Next() {
-		if p.Value.(PlayerColleague).GetName() == playerName {
-			return p.Value.(PlayerColleague)
+// getOppositePlayer in room
+func (room *WarRoom) getOppositePlayer(playerName string) *Player {
+	for _, p := range room.players {
+		if p.name != playerName {
+			return p
 		}
 	}
 
 	return nil
 }
 
-// TODO Implement turn based Q for players
+// MakeTurn for player and return if he succeed
+func (room *WarRoom) MakeTurn(p *Player) bool {
+	var isHit bool
+	// is ship was damaged during firing in targeted coordinates
+	targetCoordinate := p.lastFireCoordinate
+
+	oppositePlayer := room.getOppositePlayer(p.name)
+
+	// Go throw all ships and try hit
+	for _, ship := range oppositePlayer.GetFleet() {
+		isHit = ship.isHit(targetCoordinate)
+	}
+
+	return isHit
+}
