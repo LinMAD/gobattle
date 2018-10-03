@@ -12,6 +12,8 @@ type PlayerColleague interface {
 
 // Player
 type Player struct {
+	// isActive player
+	isActive bool
 	// name of player
 	name string
 	// playerFleet stores all available fleet for player

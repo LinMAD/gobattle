@@ -1,33 +1,34 @@
 package main
 
 import (
+	"github.com/LinMAD/gobattle/pkg"
 	"github.com/LinMAD/gobattle/pkg/game"
 	"log"
 )
 
-var player *game.Player
+var newGame *pkg.GameMaster
 
-// TODO Refactor markup when mechanism with "AI" interaction will be implemented
+func init() {
+	var newGameErr error
 
-func init()  {
-	// TODO Add component to return prepared dependencies with "AI"
-	warRoom := game.NewWarRoom()
+	// Generate your own fleet
+	// TODO Add generator
+	myFleet := make([]*game.Ship, 0)
 
-	// TODO Add generator for fleet creation
-	shipCoordinate := game.Coordinate{AxisX: 0, AxisY: 0}
-	shipLocation := make([]game.Coordinate, 1)
-	shipLocation[0] = shipCoordinate
-	fleet := make([]*game.Ship, 0)
-	fleet = append(fleet, &game.Ship{IsAlive:  true, Location: shipLocation})
-
-	player, errPlayer := game.NewPlayer("MyPlayerName", fleet, warRoom)
-	if errPlayer != nil {
-		log.Fatalln(errPlayer.Error())
+	newGame, newGameErr = pkg.NewGame("MyPlayerName", myFleet)
+	if newGameErr != nil {
+		log.Println(newGameErr.Error())
 	}
-
-	warRoom.JoinPlayer(player)
 }
 
+// main represents game loop
 func main() {
-	//player.GunShoot(game.Coordinate{AxisX: 1, AxisY: 1})
+	for newGame.StillPlaying {
+		// TODO Implement own AI\Bot to win the game
+		fireTo := game.Coordinate{AxisX: 1, AxisY: 1}
+
+		isHit := newGame.ShootInCoordinate(fireTo)
+		log.Println("Did i shoot the ship: ", isHit)
+		// TODO Verify my fleet, if I miss my shot then I can have casualties
+	}
 }
