@@ -10,6 +10,8 @@ type WarRoomMediator interface {
 	JoinPlayer(p *Player) error
 	// MakeTurn for player and return if he succeed
 	MakeTurn(p *Player) bool
+	// GetActivePlayer returns player who must make turn
+	GetActivePlayer() *Player
 }
 
 // WarRoom
@@ -35,6 +37,7 @@ func (room *WarRoom) JoinPlayer(newPlayer *Player) error {
 	}
 
 	room.players = append(room.players, newPlayer)
+	room.players[0].isActive = true
 
 	return nil
 }
@@ -64,4 +67,16 @@ func (room *WarRoom) MakeTurn(p *Player) bool {
 	}
 
 	return isHit
+}
+
+// GetActivePlayer he must make turn
+func (room *WarRoom) GetActivePlayer() *Player {
+	for _, p := range room.players {
+		if p.isActive {
+			return p
+		}
+	}
+
+	// That should not happen, only if one player in room
+	return nil
 }
