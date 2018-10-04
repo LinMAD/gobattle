@@ -13,7 +13,11 @@ func init() {
 
 	// Generate your own fleet
 	// TODO Add generator
+	shipCoordinate := game.Coordinate{AxisX: 0, AxisY: 0}
+	shipLocation := make([]game.Coordinate, 1)
+	shipLocation[0] = shipCoordinate
 	myFleet := make([]*game.Ship, 0)
+	myFleet = append(myFleet, &game.Ship{IsAlive: true, Location: shipLocation})
 
 	newGame, newGameErr = pkg.NewGame("MyPlayerName", myFleet)
 	if newGameErr != nil {
@@ -28,7 +32,7 @@ func main() {
 		fireTo := game.Coordinate{AxisX: 1, AxisY: 1}
 
 		isHit := newGame.ShootInCoordinate(fireTo)
-		log.Println("Did i shoot the ship: ", isHit)
+		log.Println("Did I shoot the ship:", isHit)
 		// TODO Verify my fleet, if I miss my shot then I can have casualties
 	}
 }

@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"github.com/LinMAD/gobattle/pkg/game"
+	"log"
 )
 
 const botName = "Govern"
@@ -50,6 +51,8 @@ func NewGame(playerName string, playerFleet []*game.Ship) (*GameMaster, error) {
 func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	var isFirstPlayerShot bool
 
+	// TODO Check if players still have a fleet, if not stop game
+
 	// Here can be tricky
 	// if next turn not a build in bot then
 	// return only if shot hit a ship
@@ -64,11 +67,14 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	// So first player loosed initiative
 	// Now bot will try shot all ships while first player waits
 	// TODO Do that go routine
+	var botHit bool // TODO remove that stub
 	for {
 		// TODO Give AI to choose where to shoot
 		// AI did action
-		if false {
+		log.Println("BOT SHOT")
+		if botHit == false {
 			return isFirstPlayerShot
 		}
+		botHit = false
 	}
 }

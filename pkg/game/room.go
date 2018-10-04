@@ -37,6 +37,7 @@ func (room *WarRoom) JoinPlayer(newPlayer *Player) error {
 	}
 
 	room.players = append(room.players, newPlayer)
+	room.players[0].isActive = true
 
 	return nil
 }

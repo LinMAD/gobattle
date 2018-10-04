@@ -50,6 +50,11 @@ func TestWarRoom_MakeTurn(t *testing.T) {
 		t.Error(err.Error())
 		t.FailNow()
 	}
+
+	if wr.GetActivePlayer() == nil {
+		t.Error("Expected one player be active")
+	}
+
 	p1 := wr.getOppositePlayer("P2")
 	if !p1.GunShoot(Coordinate{1, 1}) {
 		t.Error("Expected to be damaged ship")
