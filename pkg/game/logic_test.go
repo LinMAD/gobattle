@@ -50,9 +50,8 @@ func TestShip_isStillAlive(t *testing.T) {
 }
 
 func TestNewBattleGround(t *testing.T) {
-	bg := newBattleGround(5, 5)
-	if bg.MapSettings.AxisX != 5 || bg.MapSettings.AxisY != 5 {
-		t.Error("New battle ground size not same as given")
+	if newBattleGround() == nil {
+		t.Error("Expected pointer for function")
 	}
 }
 
