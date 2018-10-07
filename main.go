@@ -32,7 +32,9 @@ func main() {
 		fireTo := game.Coordinate{AxisX: 1, AxisY: 1}
 
 		isHit := newGame.ShootInCoordinate(fireTo)
-		log.Println("Did I shoot the ship:", isHit)
-		// TODO Verify my fleet, if I miss my shot then I can have casualties
+		log.Println("Did I shoot the ship? It's ", isHit)
 	}
+
+	log.Println("--- GAME END ---")
+	log.Printf("--- %s --- \n", newGame.GameEndReason)
 }
