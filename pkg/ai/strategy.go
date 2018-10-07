@@ -2,6 +2,8 @@ package ai
 
 import (
 	"github.com/LinMAD/gobattle/pkg/game"
+	"math/rand"
+	"time"
 )
 
 type shotStrategy interface {
@@ -9,8 +11,44 @@ type shotStrategy interface {
 }
 
 type (
-	gridStrategy struct{}
+	gridStrategy   struct{}
+	randomStrategy struct{}
 )
+
+// GetTargetLocation calculate totally random coordinate
+func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
+	// if can't generate random target, get any non shot
+	st := time.Now()
+	rand.Seed(st.Unix())
+	for {
+		now := time.Now()
+		if now.Sub(st) >= time.Second {
+			for y, xLine := range sea {
+				for x := range xLine {
+					if sea[y][x] != game.FShot {
+						return &game.Coordinate{
+							AxisX: int8(x),
+							AxisY: int8(y),
+						}
+					}
+				}
+			}
+			break
+		}
+
+		t := &game.Coordinate{
+			AxisX: int8(rand.Intn(int(game.FSize) - 1)),
+			AxisY: int8(rand.Intn(int(game.FSize) - 1)),
+		}
+
+		if sea[t.AxisY][t.AxisX] != game.FShot {
+			return t
+		}
+	}
+
+	// TODO Make random more smarter, try hit location where less known area
+	return nil
+}
 
 // GetTargetLocation scout whole sea in grid order
 func (gridStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
@@ -31,21 +69,21 @@ func (gridStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 	for y = 0; y <= game.FSize; y++ {
 		switch y {
 		case 0, 4, 8:
-			target := &game.Coordinate{AxisX:y, AxisY:3}
+			target := &game.Coordinate{AxisX: y, AxisY: 3}
 			if isToNext(7, sea, target) {
 				continue
 			}
 
 			return target
 		case 1, 5, 9:
-			target := &game.Coordinate{AxisX:y, AxisY:2}
+			target := &game.Coordinate{AxisX: y, AxisY: 2}
 			if isToNext(6, sea, target) {
 				continue
 			}
 
 			return target
 		case 2, 6:
-			target := &game.Coordinate{AxisX:y}
+			target := &game.Coordinate{AxisX: y}
 			if isToNext(4, sea, target) {
 				if isToNext(8, sea, target) {
 					continue
@@ -54,7 +92,7 @@ func (gridStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 
 			return target
 		case 3, 7:
-			target := &game.Coordinate{AxisX:y, AxisY:1}
+			target := &game.Coordinate{AxisX: y, AxisY: 1}
 			if isToNext(5, sea, target) {
 				if isToNext(9, sea, target) {
 					continue

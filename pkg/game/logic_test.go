@@ -145,8 +145,6 @@ func TestBattleField_ValidateFleetCollision_CorrectFleet(t *testing.T) {
 	}
 }
 
-// TODO Think about to add it to generator
-
 // helpCreateShip simple structure generator for ship
 func helpCreateShip(coordinates ...Coordinate) *Ship {
 	list := make([]Coordinate, 0)

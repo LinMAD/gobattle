@@ -26,15 +26,14 @@ func NewGame(playerName string, playerFleet []*game.Ship) (*GameMaster, error) {
 	gp := &GameMaster{
 		room:         game.NewWarRoom(),
 		StillPlaying: true,
-		bot: ai.NewGovern(),
+		bot:          ai.NewGovern(),
 	}
 
 	_, errPlayer = game.NewPlayer(playerName, playerFleet, gp.room)
 	if errPlayer != nil {
 		return nil, errPlayer
 	}
-
-	// TODO Generate player for game AI
+	
 	// TODO Add generator for fleet creation
 	shipCoordinate := game.Coordinate{AxisX: 0, AxisY: 0}
 	shipLocation := make([]game.Coordinate, 1)
@@ -82,6 +81,7 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	return isFirstPlayerShot
 }
 
+// checkPlayerFleet check if game ended
 func (gp *GameMaster) checkPlayerFleet(p *game.Player) {
 	fleetSize := len(p.GetFleet())
 

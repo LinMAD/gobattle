@@ -22,20 +22,18 @@ func NewGovern() *Govern {
 	}
 }
 
+// GetName of bot
 func (g *Govern) GetName() string {
 	return g.name
 }
 
+// OpenFire decide target where to shoot
 func (g *Govern) OpenFire() game.Coordinate {
-	// TODO Add more strategies to bombard player
-	s := gridStrategy{}
-	t := s.GetTargetLocation(g.seaPlan)
+	grid := gridStrategy{}
+	t := grid.GetTargetLocation(g.seaPlan)
 	if t == nil {
-		// TODO Go random always
-		t = &game.Coordinate{
-			AxisX: 0,
-			AxisY: 0,
-		}
+		rand := randomStrategy{}
+		t = rand.GetTargetLocation(g.seaPlan)
 	}
 
 	g.seaPlan[t.AxisY][t.AxisX] = game.FShot
@@ -53,12 +51,3 @@ func (g *Govern) OpenFire() game.Coordinate {
 
 	return *t
 }
-
-//
-//func (g *Govern) CollectShotResult(isHit bool, target game.Coordinate) {
-//	for _, s := range g.foeFleet {
-//		for _, l := range s.Location {
-//			if l == target
-//		}
-//	}
-//}
