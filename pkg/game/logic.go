@@ -6,10 +6,11 @@ import (
 
 const (
 	// Field marks
-	FShot int8 = -1 // shot cell or ships
-	FNone int8 = 0  // unknown field, empty
-	FShip int8 = 1  // ship on field
-	FSize int8 = 10 // size of battle field, max of X and Y axis (count from 0)
+	FNone  string = "." // unknown field, empty
+	FShip  string = "#" // ship on field
+	GunHit string = "X" // shot cell or ships
+	GunMis string = "*" // missed shot
+	FSize  int8   = 10  // size of battle field, max of X and Y axis (count from 0)
 )
 
 // ShipTypes in fleet, each represent one ship
@@ -21,6 +22,8 @@ type Ship struct {
 	IsAlive bool
 	// Location list of coordinates where ship located, if it has negative coordinate, then ship is damaged
 	Location []Coordinate
+	// DamagedLocation list where ship are shot
+	DamagedLocation []*Coordinate
 }
 
 // Coordinate are concrete position on X,Y axis
@@ -56,9 +59,9 @@ func ValidateFleetCollision(fleet []*Ship) error {
 
 // hitShip to kill or damage targeted ship by firing coordinates
 func (s *Ship) isHit(firingCoordinate *Coordinate) bool {
-	for i, shipLocation := range s.Location {
+	for _, shipLocation := range s.Location {
 		if shipLocation.AxisX == firingCoordinate.AxisX && shipLocation.AxisY == firingCoordinate.AxisY {
-			s.Location[i] = Coordinate{FShot, FShot}
+			s.DamagedLocation = append(s.DamagedLocation, &shipLocation)
 			s.isStillAlive()
 
 			return true
@@ -70,17 +73,7 @@ func (s *Ship) isHit(firingCoordinate *Coordinate) bool {
 
 // isStillAlive check ship health by validating his location
 func (s *Ship) isStillAlive() bool {
-	var health, sizeOfShip int
-	sizeOfShip = len(s.Location)
-	health = sizeOfShip
-
-	for _, l := range s.Location {
-		if l.AxisY < 0 && l.AxisX < 0 {
-			health--
-		}
-	}
-
-	if health == 0 {
+	if len(s.DamagedLocation) == len(s.Location) {
 		s.IsAlive = false
 	}
 

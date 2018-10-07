@@ -17,7 +17,7 @@ import (
 var (
 	newGame         *pkg.GameMaster
 	isGameWithHuman bool
-	playerName string
+	playerName      string
 )
 
 // init game setup
@@ -29,7 +29,22 @@ func init() {
 	flag.Parse()
 
 	// Setup player, name, fleet
-	newGame, newGameErr = pkg.NewGame(playerName, generator.NewFleet())
+	playerFleet := generator.NewFleet()
+	render.ShowBattleField(
+		render.Screen{
+			Title:       playerName + " it's your fleet" ,
+			BattleField: generator.NewSeaField(playerFleet),
+		},
+		true,
+	)
+	settings := pkg.GameSettings{
+		PlayerName:    playerName,
+		PlayerFleet:   generator.NewFleet(),
+		IsVersusHuman: isGameWithHuman,
+		GameSpeed:     100,
+	}
+
+	newGame, newGameErr = pkg.NewGame(settings)
 	if newGameErr != nil {
 		log.Println(newGameErr.Error())
 	}
@@ -37,20 +52,27 @@ func init() {
 
 // main, game loop starts here with condition of game type Human vs Bot or self play
 func main() {
+	seaPlan := generator.NewSeaField(nil)
 	if !isGameWithHuman {
 		for newGame.StillPlaying {
 			// TODO Implement own AI\Bot to win the game
 			newGame.ShootInCoordinate(game.Coordinate{AxisX: 1, AxisY: 1})
 		}
 	} else {
+		var isHit bool
 		reader := bufio.NewReader(os.Stdin)
-		seaPlan := generator.NewSeaField(nil)
+		isNextCycle := false
 		for newGame.StillPlaying {
-			render.ShowBattleField("Battle field of " + playerName, seaPlan)
-
-			target := game.Coordinate{}
+			render.ShowBattleField(
+				render.Screen{
+					Title:       "Battle field of " + playerName,
+					BattleField: seaPlan,
+				},
+				isNextCycle,
+			)
 			fmt.Println("Enter coordinate to fire.")
 
+			target := game.Coordinate{}
 			fmt.Print("Target X coordinate: ")
 			xStr, _ := reader.ReadString('\n')
 			target.AxisX = clearHumanInput(xStr)
@@ -59,14 +81,16 @@ func main() {
 			yStr, _ := reader.ReadString('\n')
 			target.AxisY = clearHumanInput(yStr)
 
-			isHit := newGame.ShootInCoordinate(target)
-			if isHit {
-				seaPlan[target.AxisY][target.AxisX] = 5
-			} else {
-				seaPlan[target.AxisY][target.AxisX] = game.FShot
+			isHit = newGame.ShootInCoordinate(target)
+			marker := seaPlan[target.AxisY][target.AxisX]
+			if marker != game.GunMis && marker != game.GunHit {
+				if isHit {
+					seaPlan[target.AxisY][target.AxisX] = game.GunHit
+				} else {
+					seaPlan[target.AxisY][target.AxisX] = game.GunMis
+				}
 			}
-
-			fmt.Printf("Did I shoot the ship? %v \n\n", isHit)
+			isNextCycle = true
 		}
 	}
 

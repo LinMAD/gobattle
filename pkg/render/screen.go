@@ -2,13 +2,23 @@ package render
 
 import (
 	"fmt"
-	"github.com/LinMAD/gobattle/pkg/game"
 )
 
+// Screen to show
+type Screen struct {
+	// Title of screen
+	Title string
+	// BattleField in action
+	BattleField [][]string
+}
+
 // ShowBattleField show battle field
-func ShowBattleField(title string, battleField [][]int8) {
-	fmt.Print("\033[H\033[2J\n")
-	fmt.Println(title)
+func ShowBattleField(s Screen, clearScreen bool) {
+	if clearScreen {
+		fmt.Print("\033[H\033[2J")
+	}
+
+	fmt.Println("\n", s.Title)
 	fmt.Println("\nY")
 
 	underLine := ""
@@ -17,11 +27,7 @@ func ShowBattleField(title string, battleField [][]int8) {
 
 		underLine += "---"
 		for x := 0; x < 10; x++ {
-			if battleField[y][x] == game.FShot {
-				fmt.Printf("%d ", battleField[y][x])
-				continue
-			}
-			fmt.Printf(" %d ", battleField[y][x])
+			fmt.Printf(" %s ", s.BattleField[y][x])
 		}
 		fmt.Println()
 

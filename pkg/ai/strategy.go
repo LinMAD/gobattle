@@ -16,7 +16,7 @@ type (
 )
 
 // GetTargetLocation calculate totally random coordinate
-func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
+func (randomStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
 	st := time.Now()
 	// TODO Make random more smarter, try hit location where less known area
 	for {
@@ -24,7 +24,8 @@ func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 			AxisX: generator.RandomNum(0, int(game.FSize)-1),
 			AxisY: generator.RandomNum(0, int(game.FSize)-1),
 		}
-		if sea[t.AxisY][t.AxisX] != game.FShot {
+		markOnField := sea[t.AxisY][t.AxisX]
+		if markOnField != game.GunHit && markOnField != game.GunMis {
 			return t
 		}
 
@@ -36,7 +37,7 @@ func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 		// ok, get any non shot location
 		for y, xLine := range sea {
 			for x := range xLine {
-				if sea[y][x] != game.FShot {
+				if sea[y][x] != game.GunHit {
 					return &game.Coordinate{AxisX: int8(x), AxisY: int8(y)}
 				}
 			}
@@ -47,12 +48,14 @@ func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 }
 
 // GetTargetLocation scout whole sea in grid order
-func (gridStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
+func (gridStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
 	// help locate next unknown location in line
-	isToNext := func(nextY int8, sea [][]int8, target *game.Coordinate) bool {
-		if sea[target.AxisY][target.AxisX] == game.FShot {
+	isToNext := func(nextY int8, sea [][]string, target *game.Coordinate) bool {
+		markOnField := sea[target.AxisY][target.AxisX]
+		if markOnField == game.GunHit || markOnField == game.GunMis {
 			target.AxisY = nextY
-			if sea[target.AxisY][target.AxisX] == game.FShot {
+			markOnField = sea[target.AxisY][target.AxisX]
+			if markOnField == game.GunHit || markOnField == game.GunMis {
 				return true
 			}
 		}

@@ -6,10 +6,25 @@ import (
 	"github.com/LinMAD/gobattle/pkg/game"
 	"github.com/LinMAD/gobattle/pkg/generator"
 	"github.com/LinMAD/gobattle/pkg/render"
+	"time"
 )
+
+// GameSettings for new game
+type GameSettings struct {
+	// PlayerName on display
+	PlayerName string
+	// PlayerFleet collection of ships
+	PlayerFleet []*game.Ship
+	// IsVersusHuman flag to show screens of 2 players
+	IsVersusHuman bool
+	// GameSpeed how fast changes moves (for bots) in millisecond
+	GameSpeed time.Duration
+}
 
 // GameMaster encapsulates game iterations and follows rules
 type GameMaster struct {
+	// versusHuman
+	versusHuman bool
 	// room with players
 	room *game.WarRoom
 	// StillPlaying until one of the fleet not destroyed
@@ -18,18 +33,22 @@ type GameMaster struct {
 	GameEndReason string
 	// bot to emulate gaming
 	bot *ai.Govern
+	// timeToSleep to hold game speed in millisecond
+	timeToSleep time.Duration
 }
 
 // NewGame creates game process
-func NewGame(playerName string, playerFleet []*game.Ship) (*GameMaster, error) {
+func NewGame(settings GameSettings) (*GameMaster, error) {
 	var errPlayer error
 	gp := &GameMaster{
+		versusHuman:  settings.IsVersusHuman,
 		room:         game.NewWarRoom(),
 		StillPlaying: true,
 		bot:          ai.NewGovern(),
+		timeToSleep:  settings.GameSpeed,
 	}
 
-	_, errPlayer = game.NewPlayer(playerName, playerFleet, gp.room)
+	_, errPlayer = game.NewPlayer(settings.PlayerName, settings.PlayerFleet, gp.room)
 	if errPlayer != nil {
 		return nil, errPlayer
 	}
@@ -63,10 +82,24 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	nextPlayer = gp.room.GetActivePlayer()
 	for {
 		// AI did action
-		isBotHit := nextPlayer.GunShoot(gp.bot.OpenFire())
+		targetToHit := gp.bot.OpenFire()
+		isBotHit := nextPlayer.GunShoot(targetToHit)
 		// Check if player has fleet
-		render.ShowBattleField("Battle field of " + gp.bot.GetName(), gp.bot.GetSeaPlan())
-		gp.checkPlayerFleet(gp.room.GetOppositePlayer(gp.bot.GetName()))
+		gp.bot.CollectResultOfShot(targetToHit, isBotHit)
+
+		oppositePlayer := gp.room.GetOppositePlayer(gp.bot.GetName())
+		gp.checkPlayerFleet(oppositePlayer)
+		if gp.versusHuman == false {
+			render.ShowBattleField(
+				render.Screen{
+					Title: gp.bot.GetName(),
+					BattleField: gp.bot.GetSeaPlan(),
+				},
+				true,
+			)
+			time.Sleep(gp.timeToSleep * time.Millisecond)
+		}
+
 		// Ok if bot win or miss then return back control to player
 		if gp.StillPlaying == false || isBotHit == false {
 			break

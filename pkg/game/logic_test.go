@@ -35,17 +35,21 @@ func TestShip_isStillAlive(t *testing.T) {
 	}
 
 	l1 = Coordinate{AxisX: 1, AxisY: 1}
-	l2 = Coordinate{AxisX: -1, AxisY: -1}
 	ship = helpCreateShip(l1, l2)
+	ship.DamagedLocation = make([]*Coordinate, 0)
+	ship.DamagedLocation = append(ship.DamagedLocation, &l1)
 	if ship.isStillAlive() == false {
 		t.Error("Expected alive ship even if its damaged")
 	}
 
-	l1 = Coordinate{AxisX: -1, AxisY: -1}
-	l2 = Coordinate{AxisX: -1, AxisY: -1}
+	l1 = Coordinate{AxisX: 5, AxisY: 5}
+	l2 = Coordinate{AxisX: 5, AxisY: 6}
 	ship = helpCreateShip(l1, l2)
+	ship.DamagedLocation = make([]*Coordinate, 0)
+	ship.DamagedLocation = append(ship.DamagedLocation, &l1)
+	ship.DamagedLocation = append(ship.DamagedLocation, &l2)
 	if ship.isStillAlive() {
-		t.Error("Expected to be destroyed ship, all locations are negative")
+		t.Error("Expected to be destroyed ship")
 	}
 }
 
