@@ -30,6 +30,8 @@ func (g *Govern) GetName() string {
 // OpenFire decide target where to shoot
 func (g *Govern) OpenFire() game.Coordinate {
 	grid := gridStrategy{}
+	// TODO Add strategy with remembered ships
+	// TODO Get random strategy between random and grid
 	t := grid.GetTargetLocation(g.seaPlan)
 	if t == nil {
 		rand := randomStrategy{}
@@ -37,17 +39,6 @@ func (g *Govern) OpenFire() game.Coordinate {
 	}
 
 	g.seaPlan[t.AxisY][t.AxisX] = game.FShot
-
-	print("\n")
-	for y := 9; y >= 0; y-- {
-		for x := 0; x < 10; x++ {
-			print(" ")
-			print(g.seaPlan[y][x])
-			print(" ")
-		}
-		print("\n")
-	}
-	print("\n")
 
 	return *t
 }

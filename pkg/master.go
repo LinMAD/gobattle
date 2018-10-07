@@ -33,7 +33,7 @@ func NewGame(playerName string, playerFleet []*game.Ship) (*GameMaster, error) {
 	if errPlayer != nil {
 		return nil, errPlayer
 	}
-	
+
 	// TODO Add generator for fleet creation
 	shipCoordinate := game.Coordinate{AxisX: 0, AxisY: 0}
 	shipLocation := make([]game.Coordinate, 1)
@@ -56,9 +56,9 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	// if next turn not a build in bot then
 	// return only if shot hit a ship
 	nextPlayer := gp.room.GetActivePlayer()
-	gp.checkPlayerFleet(gp.room.GetOppositePlayer(nextPlayer.GetName()))
 	if nextPlayer.GetName() != gp.bot.GetName() {
 		isFirstPlayerShot = nextPlayer.GunShoot(target)
+		gp.checkPlayerFleet(gp.room.GetOppositePlayer(nextPlayer.GetName()))
 		if isFirstPlayerShot {
 			return isFirstPlayerShot
 		}

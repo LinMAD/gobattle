@@ -17,12 +17,23 @@ type (
 
 // GetTargetLocation calculate totally random coordinate
 func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
-	// if can't generate random target, get any non shot
 	st := time.Now()
 	rand.Seed(st.Unix())
+
+	// TODO Make random more smarter, try hit location where less known area
+
 	for {
-		now := time.Now()
-		if now.Sub(st) >= time.Second {
+		t := &game.Coordinate{
+			AxisX: int8(rand.Intn(int(game.FSize) - 1)),
+			AxisY: int8(rand.Intn(int(game.FSize) - 1)),
+		}
+
+		if sea[t.AxisY][t.AxisX] != game.FShot {
+			return t
+		}
+
+		// if can't generate random target in second, get any non shot location
+		if time.Now().Sub(st) >= time.Second {
 			for y, xLine := range sea {
 				for x := range xLine {
 					if sea[y][x] != game.FShot {
@@ -33,20 +44,9 @@ func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 					}
 				}
 			}
-			break
-		}
-
-		t := &game.Coordinate{
-			AxisX: int8(rand.Intn(int(game.FSize) - 1)),
-			AxisY: int8(rand.Intn(int(game.FSize) - 1)),
-		}
-
-		if sea[t.AxisY][t.AxisX] != game.FShot {
-			return t
 		}
 	}
 
-	// TODO Make random more smarter, try hit location where less known area
 	return nil
 }
 
