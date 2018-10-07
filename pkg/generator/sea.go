@@ -5,12 +5,13 @@ import (
 	"sync"
 )
 
-func GenerateSeaPlan(fleet []*game.Ship) [][]int8 {
-	seaPlan := make([][]int8, game.FSize)
+// NewSeaField create sea map
+func NewSeaField(fleet []*game.Ship) [][]string {
+	seaPlan := make([][]string, game.FSize)
 
 	// Create sea plan
 	for y := 0; int8(y) < game.FSize; y++ {
-		line := make([]int8, game.FSize)
+		line := make([]string, game.FSize)
 		for x := 0; int8(x) < game.FSize; x++ {
 			line[x] = game.FNone
 		}
@@ -25,7 +26,7 @@ func GenerateSeaPlan(fleet []*game.Ship) [][]int8 {
 	var wg sync.WaitGroup
 	for w = 0; w < len(fleet); w++ {
 		wg.Add(1)
-		go func(w int, seaPlan [][]int8) {
+		go func(w int, seaPlan [][]string) {
 			defer wg.Done()
 			for _, coordinate := range fleet[w].Location {
 				seaPlan[coordinate.AxisY][coordinate.AxisX] = game.FShip

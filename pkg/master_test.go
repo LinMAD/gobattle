@@ -8,10 +8,13 @@ import (
 func TestNewGameAndShootShip(t *testing.T) {
 	var gm *GameMaster
 	var err error
+	var settings GameSettings
 
 	fleet := make([]*game.Ship, 0)
 
-	_, err = NewGame("p1", fleet)
+	settings.PlayerName = "p1"
+	settings.PlayerFleet = fleet
+	_, err = NewGame(settings)
 	if err == nil {
 		t.Error("Expected error, fleet are empty")
 	}
@@ -20,7 +23,8 @@ func TestNewGameAndShootShip(t *testing.T) {
 	shipLocation := make([]game.Coordinate, 1)
 	shipLocation[0] = shipCoordinate
 	fleet = append(fleet, &game.Ship{IsAlive: true, Location: shipLocation})
-	gm, err = NewGame("p1", fleet)
+	settings.PlayerFleet = fleet
+	gm, err = NewGame(settings)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -31,9 +35,5 @@ func TestNewGameAndShootShip(t *testing.T) {
 
 	if gm.StillPlaying == false {
 		t.Error("Expected game state still playing")
-	}
-
-	if gm.ShootInCoordinate(game.Coordinate{AxisX: 0, AxisY: 0}) == false {
-		t.Error("Expected tru on hit of the ship")
 	}
 }

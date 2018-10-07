@@ -18,8 +18,6 @@ type Player struct {
 	name string
 	// playerFleet stores all available fleet for player
 	fleet []*Ship
-	// battleField
-	battleField *BattleField
 	// room where player joined
 	room WarRoomMediator
 	// lastFireCoordinate place where was gun shoot
@@ -29,13 +27,15 @@ type Player struct {
 // NewPlayer
 func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, err error) {
 	p = &Player{
-		name:        name,
-		battleField: newBattleGround(),
-		room:        warRoom,
+		name: name,
+		room: warRoom,
 	}
 
 	if len(fleet) == 0 {
 		return nil, fmt.Errorf("player fleet cannot be empty")
+	}
+	if len(fleet) > len(ShipTypes) {
+		return nil, fmt.Errorf("player fleet should be not greater than -> %d", len(ShipTypes))
 	}
 
 	for _, ship := range fleet {
@@ -44,7 +44,7 @@ func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, 
 		}
 	}
 
-	if isCorrect := p.battleField.ValidateFleetCollision(fleet); isCorrect != nil {
+	if isCorrect := ValidateFleetCollision(fleet); isCorrect != nil {
 		return nil, isCorrect
 	}
 

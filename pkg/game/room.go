@@ -56,6 +56,7 @@ func (room *WarRoom) GetOppositePlayer(playerName string) *Player {
 // MakeTurn for player and return if he succeed
 func (room *WarRoom) MakeTurn(p *Player) bool {
 	var isHit bool
+
 	// is ship was damaged during firing in targeted coordinates
 	targetCoordinate := p.lastFireCoordinate
 
@@ -64,6 +65,9 @@ func (room *WarRoom) MakeTurn(p *Player) bool {
 	// Go throw all ships and try hit
 	for _, ship := range oppositePlayer.GetFleet() {
 		isHit = ship.isHit(targetCoordinate)
+		if isHit {
+			break
+		}
 	}
 
 	// Change player

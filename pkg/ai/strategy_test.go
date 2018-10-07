@@ -7,7 +7,7 @@ import (
 )
 
 func TestGridStrategy_GetTargetLocation(t *testing.T) {
-	sea := generator.GenerateSeaPlan(nil)
+	sea := generator.NewSeaField(nil)
 
 	gd := &gridStrategy{}
 	allMoves := 0
@@ -17,7 +17,7 @@ func TestGridStrategy_GetTargetLocation(t *testing.T) {
 			break
 		}
 
-		sea[target.AxisY][target.AxisX] = game.FShot
+		sea[target.AxisY][target.AxisX] = game.GunHit
 		allMoves++
 	}
 

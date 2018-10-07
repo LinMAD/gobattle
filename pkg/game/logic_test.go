@@ -35,23 +35,21 @@ func TestShip_isStillAlive(t *testing.T) {
 	}
 
 	l1 = Coordinate{AxisX: 1, AxisY: 1}
-	l2 = Coordinate{AxisX: -1, AxisY: -1}
 	ship = helpCreateShip(l1, l2)
+	ship.DamagedLocation = make([]*Coordinate, 0)
+	ship.DamagedLocation = append(ship.DamagedLocation, &l1)
 	if ship.isStillAlive() == false {
 		t.Error("Expected alive ship even if its damaged")
 	}
 
-	l1 = Coordinate{AxisX: -1, AxisY: -1}
-	l2 = Coordinate{AxisX: -1, AxisY: -1}
+	l1 = Coordinate{AxisX: 5, AxisY: 5}
+	l2 = Coordinate{AxisX: 5, AxisY: 6}
 	ship = helpCreateShip(l1, l2)
+	ship.DamagedLocation = make([]*Coordinate, 0)
+	ship.DamagedLocation = append(ship.DamagedLocation, &l1)
+	ship.DamagedLocation = append(ship.DamagedLocation, &l2)
 	if ship.isStillAlive() {
-		t.Error("Expected to be destroyed ship, all locations are negative")
-	}
-}
-
-func TestNewBattleGround(t *testing.T) {
-	if newBattleGround() == nil {
-		t.Error("Expected pointer for function")
+		t.Error("Expected to be destroyed ship")
 	}
 }
 
@@ -70,13 +68,12 @@ func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
 
 		return fleet
 	}
-	bf := &BattleField{}
 
 	// Validate collision check on top
 	c1 := Coordinate{AxisX: 4, AxisY: 4}
 	c2 := Coordinate{AxisX: 4, AxisY: 5}
 
-	badFleet := bf.ValidateFleetCollision(getFleet(c1, c2))
+	badFleet := ValidateFleetCollision(getFleet(c1, c2))
 	if badFleet == nil {
 		t.Error("Expected error, because ships collides each other")
 	}
@@ -85,7 +82,7 @@ func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
 	c1 = Coordinate{AxisX: 4, AxisY: 4}
 	c2 = Coordinate{AxisX: 4, AxisY: 3}
 
-	badFleet = bf.ValidateFleetCollision(getFleet(c1, c2))
+	badFleet = ValidateFleetCollision(getFleet(c1, c2))
 	if badFleet == nil {
 		t.Error("Expected error, because ships collides each other")
 	}
@@ -93,19 +90,18 @@ func TestBattleField_ValidateFleetCollision_Simple(t *testing.T) {
 
 func TestBattleField_ValidateFleetCollision_Cornered(t *testing.T) {
 	var isCollides error
-	bf := &BattleField{}
 
 	s1 := helpCreateShip(Coordinate{AxisX: 5, AxisY: 5})
 	s2 := helpCreateShip(Coordinate{AxisX: 4, AxisY: 4})
 
-	isCollides = bf.ValidateFleetCollision(helpCreateFleet(s1, s2))
+	isCollides = ValidateFleetCollision(helpCreateFleet(s1, s2))
 	if isCollides == nil {
 		t.Error("Expected error, 2 ships collides on corner")
 	}
 
 	s3 := helpCreateShip(Coordinate{AxisX: 5, AxisY: 7})
 	s4 := helpCreateShip(Coordinate{AxisX: 6, AxisY: 6})
-	isCollides = bf.ValidateFleetCollision(helpCreateFleet(s3, s4))
+	isCollides = ValidateFleetCollision(helpCreateFleet(s3, s4))
 	if isCollides == nil {
 		t.Error("Expected error, 2 ships collides on corner")
 	}
@@ -113,13 +109,13 @@ func TestBattleField_ValidateFleetCollision_Cornered(t *testing.T) {
 	s5 := helpCreateShip(Coordinate{AxisX: 3, AxisY: 3}, Coordinate{AxisX: 3, AxisY: 4})
 	s6 := helpCreateShip(Coordinate{AxisX: 4, AxisY: 2}, Coordinate{AxisX: 4, AxisY: 1})
 	s7 := helpCreateShip(Coordinate{AxisX: 2, AxisY: 2})
-	isCollides = bf.ValidateFleetCollision(helpCreateFleet(s5, s6, s7))
+	isCollides = ValidateFleetCollision(helpCreateFleet(s5, s6, s7))
 	if isCollides == nil {
 		t.Error("Expected error, ships collides on corner on X3-4-5")
 	}
 
 	s8 := helpCreateShip(Coordinate{AxisX: 3, AxisY: 3})
-	isCollides = bf.ValidateFleetCollision(helpCreateFleet(s2, s8))
+	isCollides = ValidateFleetCollision(helpCreateFleet(s2, s8))
 	if isCollides == nil {
 		t.Error("Expected error, 2 ships collides on corner X,Y 3 and X,Y 4")
 	}
@@ -138,8 +134,7 @@ func TestBattleField_ValidateFleetCollision_CorrectFleet(t *testing.T) {
 		helpCreateShip(l4),
 	)
 
-	bf := &BattleField{}
-	isCollided := bf.ValidateFleetCollision(fleet)
+	isCollided := ValidateFleetCollision(fleet)
 	if isCollided != nil {
 		t.Error("Expected to be correct fleet with no collision")
 	}
