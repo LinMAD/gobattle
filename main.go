@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/LinMAD/gobattle/pkg"
 	"github.com/LinMAD/gobattle/pkg/game"
+	"github.com/LinMAD/gobattle/pkg/generator"
+	"github.com/LinMAD/gobattle/pkg/render"
 	"log"
 	"os"
 	"regexp"
@@ -15,24 +17,19 @@ import (
 var (
 	newGame         *pkg.GameMaster
 	isGameWithHuman bool
+	playerName string
 )
 
 // init game setup
 func init() {
 	var newGameErr error
 
-	flag.BoolVar(&isGameWithHuman, "Human game", false, "Is Game with human")
+	flag.StringVar(&playerName, "name", "MyPlayerName", "Players name")
+	flag.BoolVar(&isGameWithHuman, "isHuman", false, "Is Game with human")
 	flag.Parse()
 
-	// Generate your own fleet
-	// TODO Add generator
-	shipCoordinate := game.Coordinate{AxisX: 0, AxisY: 0}
-	shipLocation := make([]game.Coordinate, 1)
-	shipLocation[0] = shipCoordinate
-	myFleet := make([]*game.Ship, 0)
-	myFleet = append(myFleet, &game.Ship{IsAlive: true, Location: shipLocation})
-
-	newGame, newGameErr = pkg.NewGame("MyPlayerName", myFleet)
+	// Setup player, name, fleet
+	newGame, newGameErr = pkg.NewGame(playerName, generator.NewFleet())
 	if newGameErr != nil {
 		log.Println(newGameErr.Error())
 	}
@@ -47,7 +44,10 @@ func main() {
 		}
 	} else {
 		reader := bufio.NewReader(os.Stdin)
+		seaPlan := generator.NewSeaField(nil)
 		for newGame.StillPlaying {
+			render.ShowBattleField("Battle field of " + playerName, seaPlan)
+
 			target := game.Coordinate{}
 			fmt.Println("Enter coordinate to fire.")
 
@@ -60,6 +60,12 @@ func main() {
 			target.AxisY = clearHumanInput(yStr)
 
 			isHit := newGame.ShootInCoordinate(target)
+			if isHit {
+				seaPlan[target.AxisY][target.AxisX] = 5
+			} else {
+				seaPlan[target.AxisY][target.AxisX] = game.FShot
+			}
+
 			fmt.Printf("Did I shoot the ship? %v \n\n", isHit)
 		}
 	}

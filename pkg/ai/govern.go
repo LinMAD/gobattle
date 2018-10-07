@@ -10,21 +10,24 @@ type Govern struct {
 	name string
 	// seaPlan whole picture of sea
 	seaPlan [][]int8
-	// foeFleet stores located fleet
-	foeFleet []*game.Ship
 }
 
 // NewGovern
 func NewGovern() *Govern {
 	return &Govern{
 		name:    "Govern",
-		seaPlan: generator.GenerateSeaPlan(nil),
+		seaPlan: generator.NewSeaField(nil),
 	}
 }
 
 // GetName of bot
 func (g *Govern) GetName() string {
 	return g.name
+}
+
+// GetSeaPlan bot battle field with sea and enemy ships
+func (g *Govern) GetSeaPlan() [][]int8 {
+	return g.seaPlan
 }
 
 // OpenFire decide target where to shoot

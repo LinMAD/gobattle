@@ -13,7 +13,7 @@ const (
 )
 
 // ShipTypes in fleet, each represent one ship
-var ShipTypes = []uint8{5, 4, 3, 2, 1}
+var ShipTypes = []uint8{6, 5, 4, 3, 2, 1}
 
 // Ship structure
 type Ship struct {

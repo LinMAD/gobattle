@@ -46,13 +46,14 @@ func createShip(shipSize uint8) *game.Ship {
 		return &game.Ship{IsAlive: true, Location: shipCoordinate}
 	}
 
-	// To keep connected coordinates of ship just add to each rand num size
+	// create horizontal or vertical ship
+	isShipVertical := RandomBool()
+	// to keep connected coordinates of ship just add to each rand num size
 	x := RandomNum(0, int(game.FSize)-int(shipSize))
 	y := RandomNum(0, int(game.FSize)-int(shipSize))
 	var size uint8
 	for size = 0; size < shipSize; size++ {
-		// create horizontal or vertical ship
-		if RandomBool() {
+		if isShipVertical {
 			shipCoordinate = append(
 				shipCoordinate,
 				game.Coordinate{AxisX: x + int8(size), AxisY: y},

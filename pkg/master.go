@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/LinMAD/gobattle/pkg/ai"
 	"github.com/LinMAD/gobattle/pkg/game"
+	"github.com/LinMAD/gobattle/pkg/generator"
+	"github.com/LinMAD/gobattle/pkg/render"
 )
 
 // GameMaster encapsulates game iterations and follows rules
@@ -17,8 +19,6 @@ type GameMaster struct {
 	// bot to emulate gaming
 	bot *ai.Govern
 }
-
-// TODO Validate size of fleet and types of the ships
 
 // NewGame creates game process
 func NewGame(playerName string, playerFleet []*game.Ship) (*GameMaster, error) {
@@ -34,13 +34,7 @@ func NewGame(playerName string, playerFleet []*game.Ship) (*GameMaster, error) {
 		return nil, errPlayer
 	}
 
-	// TODO Add generator for fleet creation
-	shipCoordinate := game.Coordinate{AxisX: 0, AxisY: 0}
-	shipLocation := make([]game.Coordinate, 1)
-	shipLocation[0] = shipCoordinate
-	fleet := make([]*game.Ship, 0)
-	fleet = append(fleet, &game.Ship{IsAlive: true, Location: shipLocation})
-	_, errPlayer = game.NewPlayer(gp.bot.GetName(), fleet, gp.room)
+	_, errPlayer = game.NewPlayer(gp.bot.GetName(), generator.NewFleet(), gp.room)
 	if errPlayer != nil {
 		return nil, errPlayer
 	}
@@ -71,6 +65,7 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 		// AI did action
 		isBotHit := nextPlayer.GunShoot(gp.bot.OpenFire())
 		// Check if player has fleet
+		render.ShowBattleField("Battle field of " + gp.bot.GetName(), gp.bot.GetSeaPlan())
 		gp.checkPlayerFleet(gp.room.GetOppositePlayer(gp.bot.GetName()))
 		// Ok if bot win or miss then return back control to player
 		if gp.StillPlaying == false || isBotHit == false {

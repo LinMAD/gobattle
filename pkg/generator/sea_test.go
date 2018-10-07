@@ -16,7 +16,7 @@ func TestGenerateSeaPlan(t *testing.T) {
 	fleet := make([]*game.Ship, 0)
 	fleet = append(fleet, &game.Ship{Location: shipLocation})
 
-	seaPlan := GenerateSeaPlan(fleet)
+	seaPlan := NewSeaField(fleet)
 	if seaPlan == nil {
 		t.Error("sea plan expected to be returned")
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func TestGridStrategy_GetTargetLocation(t *testing.T) {
-	sea := generator.GenerateSeaPlan(nil)
+	sea := generator.NewSeaField(nil)
 
 	gd := &gridStrategy{}
 	allMoves := 0

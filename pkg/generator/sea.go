@@ -5,7 +5,8 @@ import (
 	"sync"
 )
 
-func GenerateSeaPlan(fleet []*game.Ship) [][]int8 {
+// NewSeaField create sea map
+func NewSeaField(fleet []*game.Ship) [][]int8 {
 	seaPlan := make([][]int8, game.FSize)
 
 	// Create sea plan
