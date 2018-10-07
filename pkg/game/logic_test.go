@@ -50,9 +50,8 @@ func TestShip_isStillAlive(t *testing.T) {
 }
 
 func TestNewBattleGround(t *testing.T) {
-	bg := newBattleGround(5, 5)
-	if bg.MapSettings.AxisX != 5 || bg.MapSettings.AxisY != 5 {
-		t.Error("New battle ground size not same as given")
+	if newBattleGround() == nil {
+		t.Error("Expected pointer for function")
 	}
 }
 
@@ -145,8 +144,6 @@ func TestBattleField_ValidateFleetCollision_CorrectFleet(t *testing.T) {
 		t.Error("Expected to be correct fleet with no collision")
 	}
 }
-
-// TODO Think about to add it to generator
 
 // helpCreateShip simple structure generator for ship
 func helpCreateShip(coordinates ...Coordinate) *Ship {

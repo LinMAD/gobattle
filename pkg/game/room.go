@@ -42,8 +42,8 @@ func (room *WarRoom) JoinPlayer(newPlayer *Player) error {
 	return nil
 }
 
-// getOppositePlayer in room
-func (room *WarRoom) getOppositePlayer(playerName string) *Player {
+// GetOppositePlayer in room
+func (room *WarRoom) GetOppositePlayer(playerName string) *Player {
 	for _, p := range room.players {
 		if p.name != playerName {
 			return p
@@ -59,11 +59,17 @@ func (room *WarRoom) MakeTurn(p *Player) bool {
 	// is ship was damaged during firing in targeted coordinates
 	targetCoordinate := p.lastFireCoordinate
 
-	oppositePlayer := room.getOppositePlayer(p.name)
+	oppositePlayer := room.GetOppositePlayer(p.name)
 
 	// Go throw all ships and try hit
 	for _, ship := range oppositePlayer.GetFleet() {
 		isHit = ship.isHit(targetCoordinate)
+	}
+
+	// Change player
+	if isHit == false {
+		p.isActive = false
+		oppositePlayer.isActive = true
 	}
 
 	return isHit

@@ -4,13 +4,12 @@ import (
 	"fmt"
 )
 
-// TODO Think about split game logic to sub package: field, ships
-
 const (
-	// General runes in communication, ships locations and part separator
-	MsgDelimiter rune = 45 // "-"
-	MsgNone      rune = 48 // "0"
-	MsgShip      rune = 49 // "1"
+	// Field marks
+	FShot int8 = -1 // shot cell or ships
+	FNone int8 = 0  // unknown field, empty
+	FShip int8 = 1  // ship on field
+	FSize int8 = 10 // size of battle field
 )
 
 // BattleGround play map stores max values of X,Y in axis
@@ -35,8 +34,8 @@ type Coordinate struct {
 }
 
 // newBattleGround
-func newBattleGround(x, y int8) *BattleField {
-	return &BattleField{MapSettings: Coordinate{AxisX: x, AxisY: y}}
+func newBattleGround() *BattleField {
+	return &BattleField{MapSettings: Coordinate{AxisX: FSize, AxisY: FSize}}
 }
 
 // ValidateFleetCollision return error with location if they collides
@@ -66,7 +65,7 @@ func (bf *BattleField) ValidateFleetCollision(fleet []*Ship) error {
 func (s *Ship) isHit(firingCoordinate *Coordinate) bool {
 	for i, shipLocation := range s.Location {
 		if shipLocation.AxisX == firingCoordinate.AxisX && shipLocation.AxisY == firingCoordinate.AxisY {
-			s.Location[i] = Coordinate{-1, -1}
+			s.Location[i] = Coordinate{FShot, FShot}
 			s.isStillAlive()
 
 			return true

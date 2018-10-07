@@ -30,7 +30,7 @@ type Player struct {
 func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, err error) {
 	p = &Player{
 		name:        name,
-		battleField: newBattleGround(10, 10),
+		battleField: newBattleGround(),
 		room:        warRoom,
 	}
 

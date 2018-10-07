@@ -55,13 +55,13 @@ func TestWarRoom_MakeTurn(t *testing.T) {
 		t.Error("Expected one player be active")
 	}
 
-	p1 := wr.getOppositePlayer("P2")
+	p1 := wr.GetOppositePlayer("P2")
 	if !p1.GunShoot(Coordinate{1, 1}) {
 		t.Error("Expected to be damaged ship")
 	}
 
 	isDead := false
-	p2 := wr.getOppositePlayer("P1")
+	p2 := wr.GetOppositePlayer("P1")
 	for _, p2s := range p2.GetFleet() {
 		if p2s.IsAlive == false {
 			isDead = true
