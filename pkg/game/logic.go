@@ -9,13 +9,11 @@ const (
 	FShot int8 = -1 // shot cell or ships
 	FNone int8 = 0  // unknown field, empty
 	FShip int8 = 1  // ship on field
-	FSize int8 = 10 // size of battle field
+	FSize int8 = 10 // size of battle field, max of X and Y axis (count from 0)
 )
 
-// BattleGround play map stores max values of X,Y in axis
-type BattleField struct {
-	MapSettings Coordinate
-}
+// ShipTypes in fleet, each represent one ship
+var ShipTypes = []uint8{5, 4, 3, 2, 1}
 
 // Ship structure
 type Ship struct {
@@ -33,13 +31,8 @@ type Coordinate struct {
 	AxisY int8
 }
 
-// newBattleGround
-func newBattleGround() *BattleField {
-	return &BattleField{MapSettings: Coordinate{AxisX: FSize, AxisY: FSize}}
-}
-
 // ValidateFleetCollision return error with location if they collides
-func (bf *BattleField) ValidateFleetCollision(fleet []*Ship) error {
+func ValidateFleetCollision(fleet []*Ship) error {
 	if len(fleet) == 1 {
 		return nil
 	}

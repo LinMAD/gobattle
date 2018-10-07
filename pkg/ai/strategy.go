@@ -2,7 +2,7 @@ package ai
 
 import (
 	"github.com/LinMAD/gobattle/pkg/game"
-	"math/rand"
+	"github.com/LinMAD/gobattle/pkg/generator"
 	"time"
 )
 
@@ -18,30 +18,26 @@ type (
 // GetTargetLocation calculate totally random coordinate
 func (randomStrategy) GetTargetLocation(sea [][]int8) *game.Coordinate {
 	st := time.Now()
-	rand.Seed(st.Unix())
-
 	// TODO Make random more smarter, try hit location where less known area
-
 	for {
 		t := &game.Coordinate{
-			AxisX: int8(rand.Intn(int(game.FSize) - 1)),
-			AxisY: int8(rand.Intn(int(game.FSize) - 1)),
+			AxisX: generator.RandomNum(0, int(game.FSize)-1),
+			AxisY: generator.RandomNum(0, int(game.FSize)-1),
 		}
-
 		if sea[t.AxisY][t.AxisX] != game.FShot {
 			return t
 		}
 
-		// if can't generate random target in second, get any non shot location
-		if time.Now().Sub(st) >= time.Second {
-			for y, xLine := range sea {
-				for x := range xLine {
-					if sea[y][x] != game.FShot {
-						return &game.Coordinate{
-							AxisX: int8(x),
-							AxisY: int8(y),
-						}
-					}
+		// try generate random target in second
+		if time.Now().Sub(st) <= time.Second {
+			continue
+		}
+
+		// ok, get any non shot location
+		for y, xLine := range sea {
+			for x := range xLine {
+				if sea[y][x] != game.FShot {
+					return &game.Coordinate{AxisX: int8(x), AxisY: int8(y)}
 				}
 			}
 		}
