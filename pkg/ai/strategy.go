@@ -7,13 +7,43 @@ import (
 )
 
 type shotStrategy interface {
-	GetTargetLocation(sea [][]int8) *game.Coordinate
+	GetTargetLocation(sea [][]string) *game.Coordinate
 }
 
 type (
-	gridStrategy   struct{}
-	randomStrategy struct{}
+	stalkerStrategy struct{}
+	gridStrategy    struct{}
+	randomStrategy  struct{}
 )
+
+// GetTargetLocation will try hit known ship
+func (stalkerStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
+	var y, x int8
+	for y = 0; y < game.FSize; y++ {
+		for x = 0; x < game.FSize; x++ {
+			if sea[y][x] == game.GunHit {
+				if x+1 < game.FSize && x-1 > 0 {
+					if sea[y][x+1] == game.FNone {
+						return &game.Coordinate{AxisX: x + 1, AxisY: y}
+					}
+					if sea[y][x-1] == game.FNone {
+						return &game.Coordinate{AxisX: x - 1, AxisY: y}
+					}
+				}
+				if y+1 < game.FSize && y-1 > 0 {
+					if sea[y+1][x] == game.FNone {
+						return &game.Coordinate{AxisX: x, AxisY: y + 1}
+					}
+					if sea[y-1][x] == game.FNone {
+						return &game.Coordinate{AxisX: x, AxisY: y - 1}
+					}
+				}
+			}
+		}
+	}
+
+	return nil // Cant find scouted ship
+}
 
 // GetTargetLocation calculate totally random coordinate
 func (randomStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {

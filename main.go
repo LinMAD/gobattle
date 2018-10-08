@@ -32,7 +32,7 @@ func init() {
 	playerFleet := generator.NewFleet()
 	render.ShowBattleField(
 		render.Screen{
-			Title:       playerName + " it's your fleet" ,
+			Title:       playerName + " it's your fleet",
 			BattleField: generator.NewSeaField(playerFleet),
 		},
 		true,

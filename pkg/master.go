@@ -92,7 +92,7 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 		if gp.versusHuman == false {
 			render.ShowBattleField(
 				render.Screen{
-					Title: gp.bot.GetName(),
+					Title:       gp.bot.GetName(),
 					BattleField: gp.bot.GetSeaPlan(),
 				},
 				true,
