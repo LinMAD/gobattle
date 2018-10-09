@@ -6,14 +6,18 @@ import (
 	"time"
 )
 
+// shotStrategy
 type shotStrategy interface {
 	GetTargetLocation(sea [][]string) *game.Coordinate
 }
 
 type (
+	// stalkerStrategy must follow known ship until death
 	stalkerStrategy struct{}
-	gridStrategy    struct{}
-	randomStrategy  struct{}
+	// gridStrategy probing sea like nest\grid
+	gridStrategy struct{}
+	// randomStrategy for the random god
+	randomStrategy struct{}
 )
 
 // GetTargetLocation will try hit known ship
@@ -42,9 +46,8 @@ func (randomStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
 	st := time.Now()
 
 	for {
-		// try generate random target in second
-		if time.Now().Sub(st) > time.Second {
-			// ok, get any location where can shoot
+		// ok timeout, grab any empty location
+		if time.Now().Sub(st) > 500*time.Millisecond {
 			for y := range sea {
 				for x := range sea {
 					if sea[y][x] != game.GunHit {
@@ -54,6 +57,7 @@ func (randomStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
 			}
 		}
 
+		// Try find more accurate target location
 		t := &game.Coordinate{
 			AxisX: generator.RandomNum(0, int(game.FSize)-1),
 			AxisY: generator.RandomNum(0, int(game.FSize)-1),

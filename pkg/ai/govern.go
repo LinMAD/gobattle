@@ -12,10 +12,10 @@ type Govern struct {
 	seaPlan [][]string
 }
 
-// NewGovern
-func NewGovern() *Govern {
+// NewGovern new bot
+func NewGovern(name string) *Govern {
 	return &Govern{
-		name:    "Govern",
+		name:    name,
 		seaPlan: generator.NewSeaField(nil),
 	}
 }

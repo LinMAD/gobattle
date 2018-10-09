@@ -33,16 +33,9 @@ func init() {
 
 	// Setup player, name, fleet
 	playerFleet := generator.NewFleet()
-	render.ShowBattleField(
-		render.Screen{
-			Title:       playerName + " it's your fleet",
-			BattleField: generator.NewSeaField(playerFleet),
-		},
-		true,
-	)
 	settings := pkg.GameSettings{
 		PlayerName:    playerName,
-		PlayerFleet:   generator.NewFleet(),
+		PlayerFleet:   playerFleet,
 		IsVersusHuman: isGameWithHuman,
 		GameSpeed:     time.Duration(gameSpeed),
 	}
@@ -51,6 +44,14 @@ func init() {
 	if newGameErr != nil {
 		log.Println(newGameErr.Error())
 	}
+
+	render.ShowBattleField(
+		render.Screen{
+			Title:       playerName + " it's your fleet",
+			BattleField: generator.NewSeaField(playerFleet),
+		},
+		true,
+	)
 }
 
 // main, game loop starts here with condition of game type Human vs Bot or self play
