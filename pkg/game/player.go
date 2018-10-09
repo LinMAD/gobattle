@@ -38,9 +38,29 @@ func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, 
 		return nil, fmt.Errorf("player fleet should be not greater than -> %d", len(ShipTypes))
 	}
 
+	isExpectedLenOfShip := func(lenOfShip int) bool {
+		for _, expected := range ShipTypes {
+			if expected == uint8(lenOfShip) {
+				return true
+			}
+		}
+
+		return false
+	}
+
 	for _, ship := range fleet {
-		if len(ship.Location) == 0 {
+		lenOfShip := len(ship.Location)
+		if lenOfShip == 0 {
 			return nil, fmt.Errorf("one of the ship in fleet has empty location")
+		}
+
+		if !isExpectedLenOfShip(lenOfShip) {
+			return nil,
+			fmt.Errorf(
+				"not allowed size of the ship (%d), fleet must have each of %v",
+				lenOfShip,
+				ShipTypes,
+			)
 		}
 	}
 
