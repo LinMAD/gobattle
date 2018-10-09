@@ -63,62 +63,54 @@ func (randomStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
 			return tc
 		}
 	}
-
-	return nil
 }
 
-// GetTargetLocation scout whole sea in grid order
+// GetTargetLocation scout whole sea in grid order, good to use in begging of game
 func (gridStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
 	// help locate next unknown location in line
-	isToNext := func(nextY int8, sea [][]string, target *game.Coordinate) bool {
+	isEmpty := func(nextY int8, sea [][]string, target *game.Coordinate) bool {
+		// Here quite stupid and can be improved
+		// say true if location unknown but not checking around
 		markOnField := sea[target.AxisY][target.AxisX]
-		if markOnField == game.GunHit || markOnField == game.GunMis {
+		if markOnField != game.FNone {
 			target.AxisY = nextY
 			markOnField = sea[target.AxisY][target.AxisX]
-			if markOnField == game.GunHit || markOnField == game.GunMis {
-				return true
+			if markOnField != game.FNone {
+				return false
 			}
 		}
 
-		return false
+		return true
 	}
 
-	// calculate target in Y line
-	var y int8
-	for y = 0; y <= game.FSize; y++ {
-		switch y {
-		case 0, 4, 8:
-			target := &game.Coordinate{AxisX: y, AxisY: 3}
-			if isToNext(7, sea, target) {
-				continue
-			}
-
-			return correctShotAccuracy(sea, target, 1)
-		case 1, 5, 9:
-			target := &game.Coordinate{AxisX: y, AxisY: 2}
-			if isToNext(6, sea, target) {
-				continue
-			}
-
-			return correctShotAccuracy(sea, target, 1)
-		case 2, 6:
-			target := &game.Coordinate{AxisX: y}
-			if isToNext(4, sea, target) {
-				if isToNext(8, sea, target) {
-					continue
-				}
-			}
-
-			return correctShotAccuracy(sea, target, 1)
-		case 3, 7:
-			target := &game.Coordinate{AxisX: y, AxisY: 1}
-			if isToNext(5, sea, target) {
-				if isToNext(9, sea, target) {
-					continue
-				}
-			}
-
-			return correctShotAccuracy(sea, target, 1)
+	// calculate target for firing in grid order
+	y := generator.RandomNum(0, int(game.FSize-1))
+	switch y {
+	case 0, 4, 8:
+		target := &game.Coordinate{AxisX: y, AxisY: 3}
+		if isEmpty(7, sea, target) {
+			return target
+		}
+	case 1, 5, 9:
+		target := &game.Coordinate{AxisX: y, AxisY: 2}
+		if isEmpty(6, sea, target) {
+			return target
+		}
+	case 2, 6:
+		target := &game.Coordinate{AxisX: y}
+		if isEmpty(4, sea, target) {
+			return target
+		}
+		if isEmpty(8, sea, target) {
+			return target
+		}
+	case 3, 7:
+		target := &game.Coordinate{AxisX: y, AxisY: 1}
+		if isEmpty(5, sea, target) {
+			return target
+		}
+		if isEmpty(9, sea, target) {
+			return target
 		}
 	}
 

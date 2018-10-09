@@ -38,13 +38,8 @@ func (g *Govern) OpenFire() game.Coordinate {
 
 	target := stalker.GetTargetLocation(g.seaPlan)
 	if target == nil {
-		if generator.RandomBool() {
-			target = rand.GetTargetLocation(g.seaPlan)
-		} else {
-			target = grid.GetTargetLocation(g.seaPlan)
-		}
+		target = grid.GetTargetLocation(g.seaPlan)
 	}
-
 	if target == nil {
 		target = rand.GetTargetLocation(g.seaPlan)
 	}

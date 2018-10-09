@@ -54,11 +54,11 @@ func TestGridStrategy_GetTargetLocation(t *testing.T) {
 			break
 		}
 
+		if sea[target.AxisY][target.AxisX] == game.GunHit {
+			t.Error("Unexpected target location, grid has unique locations to fire")
+		}
+
 		sea[target.AxisY][target.AxisX] = game.GunHit
 		allMoves++
-	}
-
-	if allMoves != 24 {
-		t.Error("Expected to be 24 moves in current strategy, but counted:", allMoves)
 	}
 }

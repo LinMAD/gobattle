@@ -56,11 +56,11 @@ func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, 
 
 		if !isExpectedLenOfShip(lenOfShip) {
 			return nil,
-			fmt.Errorf(
-				"not allowed size of the ship (%d), fleet must have each of %v",
-				lenOfShip,
-				ShipTypes,
-			)
+				fmt.Errorf(
+					"not allowed size of the ship (%d), fleet must have each of %v",
+					lenOfShip,
+					ShipTypes,
+				)
 		}
 	}
 
