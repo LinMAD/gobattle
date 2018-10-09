@@ -10,23 +10,14 @@ type Govern struct {
 	name string
 	// seaPlan whole picture of sea
 	seaPlan [][]string
-	// foeFleet known ships in sea
-	foeFleet []*game.Ship
 }
 
-// NewGovern
-func NewGovern() *Govern {
-	bot := &Govern{
-		name:     "Govern",
-		seaPlan:  generator.NewSeaField(nil),
-		foeFleet: make([]*game.Ship, 0),
+// NewGovern new bot
+func NewGovern(name string) *Govern {
+	return &Govern{
+		name:    name,
+		seaPlan: generator.NewSeaField(nil),
 	}
-
-	for s := 0; s < len(game.ShipTypes); s++ {
-		bot.foeFleet = append(bot.foeFleet, &game.Ship{IsAlive: true})
-	}
-
-	return bot
 }
 
 // GetName of bot
@@ -41,16 +32,19 @@ func (g *Govern) GetSeaPlan() [][]string {
 
 // OpenFire decide target where to shoot
 func (g *Govern) OpenFire() game.Coordinate {
+	stalker := stalkerStrategy{}
 	grid := gridStrategy{}
-	// TODO Add strategy with remembered ships
-	// TODO Get random strategy between random and grid
-	t := grid.GetTargetLocation(g.seaPlan)
-	if t == nil {
-		rand := randomStrategy{}
-		t = rand.GetTargetLocation(g.seaPlan)
+	rand := randomStrategy{}
+
+	target := stalker.GetTargetLocation(g.seaPlan)
+	if target == nil {
+		target = grid.GetTargetLocation(g.seaPlan)
+	}
+	if target == nil {
+		target = rand.GetTargetLocation(g.seaPlan)
 	}
 
-	return *t
+	return *target
 }
 
 // CollectResultOfShot
@@ -62,25 +56,4 @@ func (g *Govern) CollectResultOfShot(t game.Coordinate, isHit bool) {
 	}
 
 	g.seaPlan[t.AxisY][t.AxisX] = game.GunHit
-	for _, scoutedShip := range g.foeFleet {
-		if len(scoutedShip.DamagedLocation) == 0 {
-			scoutedShip.DamagedLocation = append(scoutedShip.DamagedLocation, &t)
-
-			return
-		}
-
-		for _, loc := range scoutedShip.DamagedLocation {
-			if loc.AxisY == t.AxisY {
-				if loc.AxisX+1 == t.AxisX || loc.AxisX-1 == t.AxisX {
-					scoutedShip.DamagedLocation = append(scoutedShip.DamagedLocation, &t)
-					return
-				}
-			}
-			if loc.AxisX == t.AxisX {
-				if loc.AxisY+1 == t.AxisY || loc.AxisY-1 == t.AxisY {
-					scoutedShip.DamagedLocation = append(scoutedShip.DamagedLocation, &t)
-				}
-			}
-		}
-	}
 }

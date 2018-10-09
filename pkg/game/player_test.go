@@ -34,7 +34,21 @@ func TestNewPlayer(t *testing.T) {
 	}
 
 	if len(p.GetFleet()) == 0 {
-		t.Error("Expected empty list of ships for new player")
+		t.Error("Not expected empty list of ships for new player")
+	}
+
+	fleet = make([]*Ship, 0)
+	fleet = append(fleet, &Ship{})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 3})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 4})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 5})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 6})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 7})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 8})
+	fleet[0].Location = append(fleet[0].Location, Coordinate{AxisX: 5, AxisY: 9})
+	_, err = NewPlayer(name, fleet, room)
+	if err == nil {
+		t.Errorf("Not allowed size of the ship, expected error")
 	}
 }
 

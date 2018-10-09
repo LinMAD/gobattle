@@ -15,13 +15,13 @@ type GameSettings struct {
 	PlayerName string
 	// PlayerFleet collection of ships
 	PlayerFleet []*game.Ship
-	// IsVersusHuman flag to show screens of 2 players
+	// IsVersusHuman flag to show screens
 	IsVersusHuman bool
 	// GameSpeed how fast changes moves (for bots) in millisecond
 	GameSpeed time.Duration
 }
 
-// GameMaster encapsulates game iterations and follows rules
+// GameMaster acts mostly like proxy to follow the game rules, encapsulates mechanics
 type GameMaster struct {
 	// versusHuman
 	versusHuman bool
@@ -37,14 +37,14 @@ type GameMaster struct {
 	timeToSleep time.Duration
 }
 
-// NewGame creates game process
+// NewGame creates game to play
 func NewGame(settings GameSettings) (*GameMaster, error) {
 	var errPlayer error
 	gp := &GameMaster{
 		versusHuman:  settings.IsVersusHuman,
 		room:         game.NewWarRoom(),
 		StillPlaying: true,
-		bot:          ai.NewGovern(),
+		bot:          ai.NewGovern("Govern"),
 		timeToSleep:  settings.GameSpeed,
 	}
 
@@ -80,24 +80,24 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	// So first player loosed initiative
 	// Now bot will try shot all ships while first player waits
 	nextPlayer = gp.room.GetActivePlayer()
+	oppositePlayer := gp.room.GetOppositePlayer(nextPlayer.GetName())
 	for {
 		// AI did action
 		targetToHit := gp.bot.OpenFire()
 		isBotHit := nextPlayer.GunShoot(targetToHit)
-		// Check if player has fleet
+		// Collect result for bot
 		gp.bot.CollectResultOfShot(targetToHit, isBotHit)
-
-		oppositePlayer := gp.room.GetOppositePlayer(gp.bot.GetName())
+		// Check if bot win the game
 		gp.checkPlayerFleet(oppositePlayer)
 		if gp.versusHuman == false {
 			render.ShowBattleField(
 				render.Screen{
-					Title: gp.bot.GetName(),
+					Title:       "Shooting field of " + gp.bot.GetName(),
 					BattleField: gp.bot.GetSeaPlan(),
 				},
 				true,
 			)
-			time.Sleep(gp.timeToSleep * time.Millisecond)
+			time.Sleep(gp.timeToSleep * time.Millisecond) // Slow down game speed
 		}
 
 		// Ok if bot win or miss then return back control to player
