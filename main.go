@@ -12,10 +12,12 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 var (
-	newGame         *pkg.GameMaster
+	gameMaster      *pkg.GameMaster
+	gameSpeed       int
 	isGameWithHuman bool
 	playerName      string
 )
@@ -26,6 +28,7 @@ func init() {
 
 	flag.StringVar(&playerName, "name", "MyPlayerName", "Players name")
 	flag.BoolVar(&isGameWithHuman, "isHuman", false, "Is Game with human")
+	flag.IntVar(&gameSpeed, "gameSpeed", 100, "Game speed (for bots only)")
 	flag.Parse()
 
 	// Setup player, name, fleet
@@ -41,10 +44,10 @@ func init() {
 		PlayerName:    playerName,
 		PlayerFleet:   generator.NewFleet(),
 		IsVersusHuman: isGameWithHuman,
-		GameSpeed:     100,
+		GameSpeed:     time.Duration(gameSpeed),
 	}
 
-	newGame, newGameErr = pkg.NewGame(settings)
+	gameMaster, newGameErr = pkg.NewGame(settings)
 	if newGameErr != nil {
 		log.Println(newGameErr.Error())
 	}
@@ -54,15 +57,15 @@ func init() {
 func main() {
 	seaPlan := generator.NewSeaField(nil)
 	if !isGameWithHuman {
-		for newGame.StillPlaying {
+		for gameMaster.StillPlaying {
 			// TODO Implement own AI\Bot to win the game
-			newGame.ShootInCoordinate(game.Coordinate{AxisX: 1, AxisY: 1})
+			gameMaster.ShootInCoordinate(game.Coordinate{AxisX: 1, AxisY: 1})
 		}
 	} else {
 		var isHit bool
 		reader := bufio.NewReader(os.Stdin)
 		isNextCycle := false
-		for newGame.StillPlaying {
+		for gameMaster.StillPlaying {
 			render.ShowBattleField(
 				render.Screen{
 					Title:       "Battle field of " + playerName,
@@ -81,7 +84,7 @@ func main() {
 			yStr, _ := reader.ReadString('\n')
 			target.AxisY = clearHumanInput(yStr)
 
-			isHit = newGame.ShootInCoordinate(target)
+			isHit = gameMaster.ShootInCoordinate(target)
 			marker := seaPlan[target.AxisY][target.AxisX]
 			if marker != game.GunMis && marker != game.GunHit {
 				if isHit {
@@ -95,7 +98,7 @@ func main() {
 	}
 
 	fmt.Println("--- GAME END ---")
-	fmt.Printf("--- %s --- \n", newGame.GameEndReason)
+	fmt.Printf("--- %s --- \n", gameMaster.GameEndReason)
 }
 
 // clearHumanInput handle input
