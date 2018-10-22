@@ -95,6 +95,13 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 		gp.checkPlayerFleet(oppositePlayer)
 
 		if gp.versusHuman == false {
+			render.ShowBattleField(
+				render.Screen{
+					Title:       "Shooting field of " + gp.bot.GetName(),
+					BattleField: gp.bot.GetSeaPlan(),
+				},
+				false,
+			)
 			time.Sleep(gp.timeToSleep * time.Millisecond) // Slow down game speed
 		}
 
