@@ -10,9 +10,9 @@ func NewSeaField(fleet []*game.Ship) [][]string {
 	seaPlan := make([][]string, game.FSize)
 
 	// Create sea plan
-	for y := 0; int8(y) < game.FSize; y++ {
+	for y := 0; y < game.FSize; y++ {
 		line := make([]string, game.FSize)
-		for x := 0; int8(x) < game.FSize; x++ {
+		for x := 0; x < game.FSize; x++ {
 			line[x] = game.FNone
 		}
 		seaPlan[y] = line
