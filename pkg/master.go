@@ -1,11 +1,15 @@
 package pkg
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/LinMAD/gobattle/pkg/ai"
 	"github.com/LinMAD/gobattle/pkg/game"
 	"github.com/LinMAD/gobattle/pkg/generator"
 	"github.com/LinMAD/gobattle/pkg/render"
+	"os"
+	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -89,13 +93,14 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 		gp.bot.CollectResultOfShot(targetToHit, isBotHit)
 		// Check if bot win the game
 		gp.checkPlayerFleet(oppositePlayer)
+
 		if gp.versusHuman == false {
 			render.ShowBattleField(
 				render.Screen{
 					Title:       "Shooting field of " + gp.bot.GetName(),
 					BattleField: gp.bot.GetSeaPlan(),
 				},
-				true,
+				false,
 			)
 			time.Sleep(gp.timeToSleep * time.Millisecond) // Slow down game speed
 		}
@@ -107,6 +112,56 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	}
 
 	return isFirstPlayerShot
+}
+
+// HandleHumanPlayer handle user input
+func (gp *GameMaster) HandleHumanPlayer(playerName string) {
+	var isHit bool
+
+	seaPlan := generator.NewSeaField(nil)
+	reader := bufio.NewReader(os.Stdin)
+	isNextCycle := false
+
+	for gp.StillPlaying {
+		render.ShowBattleField(
+			render.Screen{
+				Title:       "Battle field of " + playerName,
+				BattleField: seaPlan,
+			},
+			isNextCycle,
+		)
+		fmt.Println("Enter coordinate to fire.")
+
+		target := game.Coordinate{}
+		fmt.Print("Target X coordinate: ")
+		xStr, _ := reader.ReadString('\n')
+		target.AxisX = clearHumanInput(xStr)
+
+		fmt.Print("Target Y coordinate: ")
+		yStr, _ := reader.ReadString('\n')
+		target.AxisY = clearHumanInput(yStr)
+
+		isHit = gp.ShootInCoordinate(target)
+		marker := seaPlan[target.AxisY][target.AxisX]
+		if marker != game.GunMis && marker != game.GunHit {
+			if isHit {
+				seaPlan[target.AxisY][target.AxisX] = game.GunHit
+			} else {
+				seaPlan[target.AxisY][target.AxisX] = game.GunMis
+			}
+		}
+		isNextCycle = true
+	}
+}
+
+// clearHumanInput handle input
+func clearHumanInput(input string) int8 {
+	re := regexp.MustCompile(`(\r?\n)|\s`)
+
+	str := re.ReplaceAllString(input, "")
+	strInt, _ := strconv.Atoi(str)
+
+	return int8(strInt)
 }
 
 // checkPlayerFleet check if game ended

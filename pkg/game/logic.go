@@ -10,7 +10,7 @@ const (
 	FShip  string = "#" // ship on field
 	GunHit string = "X" // shot cell or ships
 	GunMis string = "*" // missed shot
-	FSize  int8   = 10  // size of battle field, max of X and Y axis (count from 0)
+	FSize  int    = 10  // size of battle field, max of X and Y axis (count from 0)
 )
 
 // ShipTypes in fleet, each represent one ship

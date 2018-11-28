@@ -22,7 +22,7 @@ type (
 
 // GetTargetLocation will try hit known ship
 func (stalkerStrategy) GetTargetLocation(sea [][]string) *game.Coordinate {
-	var y, x int8
+	var y, x int
 
 	// Collect all damaged fields
 	for y = 0; y < game.FSize; y++ {
@@ -127,7 +127,7 @@ func correctShotAccuracy(sea [][]string, t *game.Coordinate, diff int8) *game.Co
 
 	// Locate how ship placed
 	isShipVertical := false
-	if t.AxisY+diff < game.FSize {
+	if t.AxisY+diff < int8(game.FSize) {
 		currentMark = sea[t.AxisY][t.AxisX]
 		nextMark = sea[t.AxisY+diff][t.AxisX]
 		if currentMark == game.GunHit && nextMark == game.GunHit {
@@ -145,7 +145,7 @@ func correctShotAccuracy(sea [][]string, t *game.Coordinate, diff int8) *game.Co
 	// Calibrate by vertical\horizontal target
 	switch isShipVertical {
 	case true: // vertical target
-		if t.AxisY+diff < game.FSize {
+		if t.AxisY+diff < int8(game.FSize) {
 			if sea[t.AxisY+diff][t.AxisX] == game.FNone {
 				t.AxisY += diff
 
@@ -160,7 +160,7 @@ func correctShotAccuracy(sea [][]string, t *game.Coordinate, diff int8) *game.Co
 			}
 		}
 	case false: // horizontal target
-		if t.AxisX+diff < game.FSize {
+		if t.AxisX+diff < int8(game.FSize) {
 			if sea[t.AxisY][t.AxisX+diff] == game.FNone {
 				t.AxisX += diff
 
