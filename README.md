@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/LinMAD/gobattle.svg?branch=master)](https://travis-ci.org/LinMAD/gobattle)
+
 ```text
 Incident Report: 3.141592
 Date: ██/██/██
