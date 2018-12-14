@@ -2,30 +2,44 @@ package generator
 
 import (
 	"github.com/LinMAD/gobattle/pkg/game"
+	"sync"
 )
 
 // NewFleet generate whole fleet with random locations
 func NewFleet() []*game.Ship {
 	fleet := make([]*game.Ship, 0)
-	shipCount := uint8(len(game.ShipTypes))
+	mux := &sync.Mutex{}
 
-	for {
-		if shipCount == 0 {
-			break
-		}
+	shipCount := len(game.ShipTypes)
 
-		newShip := createShip(shipCount)
+	var wg sync.WaitGroup
+	wg.Add(shipCount)
 
-		// Check if ship not collided
-		tmpFleet := make([]*game.Ship, len(fleet))
-		copy(tmpFleet, fleet)
-		tmpFleet = append(tmpFleet, newShip)
-		err := game.ValidateFleetCollision(tmpFleet)
-		if err == nil {
-			fleet = append(fleet, newShip)
-			shipCount--
-		}
+	for worker := 1; worker <= shipCount; worker++ {
+		go func(worker int) {
+			defer wg.Done()
+
+			for {
+				newShip := createShip(uint8(worker))
+
+				// Check if ship not collided
+				mux.Lock()
+				tmpFleet := make([]*game.Ship, len(fleet))
+				copy(tmpFleet, fleet)
+				mux.Unlock()
+				tmpFleet = append(tmpFleet, newShip)
+				err := game.ValidateFleetCollision(tmpFleet)
+				if err == nil {
+					mux.Lock()
+					fleet = append(fleet, newShip)
+					mux.Unlock()
+					break
+				}
+			}
+		}(worker)
 	}
+
+	wg.Wait()
 
 	return fleet
 }

@@ -10,7 +10,6 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-	"time"
 )
 
 // GameSettings for new game
@@ -21,14 +20,10 @@ type GameSettings struct {
 	PlayerFleet []*game.Ship
 	// IsVersusHuman flag to show screens
 	IsVersusHuman bool
-	// GameSpeed how fast changes moves (for bots) in millisecond
-	GameSpeed time.Duration
 }
 
 // GameMaster acts mostly like proxy to follow the game rules, encapsulates mechanics
 type GameMaster struct {
-	// versusHuman
-	versusHuman bool
 	// room with players
 	room *game.WarRoom
 	// StillPlaying until one of the fleet not destroyed
@@ -37,19 +32,15 @@ type GameMaster struct {
 	GameEndReason string
 	// bot to emulate gaming
 	bot *ai.Govern
-	// timeToSleep to hold game speed in millisecond
-	timeToSleep time.Duration
 }
 
 // NewGame creates game to play
 func NewGame(settings GameSettings) (*GameMaster, error) {
 	var errPlayer error
 	gp := &GameMaster{
-		versusHuman:  settings.IsVersusHuman,
 		room:         game.NewWarRoom(),
 		StillPlaying: true,
 		bot:          ai.NewGovern("Govern"),
-		timeToSleep:  settings.GameSpeed,
 	}
 
 	_, errPlayer = game.NewPlayer(settings.PlayerName, settings.PlayerFleet, gp.room)
@@ -93,17 +84,6 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 		gp.bot.CollectResultOfShot(targetToHit, isBotHit)
 		// Check if bot win the game
 		gp.checkPlayerFleet(oppositePlayer)
-
-		if gp.versusHuman == false {
-			render.ShowBattleField(
-				render.Screen{
-					Title:       "Shooting field of " + gp.bot.GetName(),
-					BattleField: gp.bot.GetSeaPlan(),
-				},
-				false,
-			)
-			time.Sleep(gp.timeToSleep * time.Millisecond) // Slow down game speed
-		}
 
 		// Ok if bot win or miss then return back control to player
 		if gp.StillPlaying == false || isBotHit == false {

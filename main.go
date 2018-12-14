@@ -8,39 +8,20 @@ import (
 	"github.com/LinMAD/gobattle/pkg/generator"
 	"github.com/LinMAD/gobattle/pkg/render"
 	"log"
-	"time"
 )
 
 var (
-	gameMaster      *pkg.GameMaster
-	gameSpeed       int
-	isGameWithHuman bool
-	playerName      string
+	playerName string
+	playerFleet []*game.Ship
 )
 
 // init game setup
 func init() {
-	var newGameErr error
-
 	flag.StringVar(&playerName, "name", "Player", "Players name")
-	flag.BoolVar(&isGameWithHuman, "isHuman", false, "Is Game with human")
-	flag.IntVar(&gameSpeed, "gameSpeed", 100, "Game speed (for bots only)")
 	flag.Parse()
 
 	// Setup player, name, fleet
-	playerFleet := generator.NewFleet()
-	settings := pkg.GameSettings{
-		PlayerName:    playerName,
-		PlayerFleet:   playerFleet,
-		IsVersusHuman: isGameWithHuman,
-		GameSpeed:     time.Duration(gameSpeed),
-	}
-
-	gameMaster, newGameErr = pkg.NewGame(settings)
-	if newGameErr != nil {
-		log.Println(newGameErr.Error())
-	}
-
+	playerFleet = generator.NewFleet()
 	render.ShowBattleField(
 		render.Screen{
 			Title:       playerName + " it's your fleet",
@@ -50,40 +31,17 @@ func init() {
 	)
 }
 
-// main, game loop starts here with condition of game type Human vs Bot or self play
 func main() {
-	if isGameWithHuman {
-		gameMaster.HandleHumanPlayer(playerName)
-	} else {
-		seaPlan := generator.NewSeaField(nil)
-
-		for gameMaster.StillPlaying {
-
-			// TODO Implement own AI\Bot to win the game
-
-			// Set target to shoot foe ship
-			target := game.Coordinate{
-				AxisX: generator.RandomNum(0, game.FSize-1),
-				AxisY: generator.RandomNum(0, game.FSize-1),
-			}
-
-			// Make move with given coordinates and record result
-			if gameMaster.ShootInCoordinate(target) {
-				seaPlan[target.AxisY][target.AxisX] = game.GunHit
-			} else {
-				seaPlan[target.AxisY][target.AxisX] = game.GunMis
-			}
-
-			// Show in screen enemy field with shot results
-			render.ShowBattleField(
-				render.Screen{
-					Title:       "Battle field of " + playerName,
-					BattleField: seaPlan,
-				},
-				true,
-			)
-		}
+	// create new game
+	gameMaster, newGameErr := pkg.NewGame(
+		pkg.GameSettings{PlayerName:  playerName, PlayerFleet: playerFleet},
+	)
+	if newGameErr != nil {
+		log.Fatalln(newGameErr)
 	}
+
+	// Handle game of Human vs Bot
+	gameMaster.HandleHumanPlayer(playerName)
 
 	fmt.Println("--- GAME END ---")
 	fmt.Printf("--- %s --- \n", gameMaster.GameEndReason)

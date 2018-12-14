@@ -1,6 +1,7 @@
 package game
 
 import (
+	"math/rand"
 	"testing"
 )
 
@@ -158,4 +159,110 @@ func helpCreateFleet(ship ...*Ship) []*Ship {
 	}
 
 	return fleet
+}
+
+func provideRandomCoordinate() Coordinate {
+	return Coordinate{
+		int8(rand.Intn(FSize-1)),
+		int8(rand.Intn(FSize-1)),
+	}
+}
+
+func benchmarkValidationOfFleet(fleet []*Ship, b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		_ = ValidateFleetCollision(fleet)
+	}
+}
+
+func BenchmarkValidateFleetCollisionWithRandom1Ships(b *testing.B) {
+	benchmarkValidationOfFleet(
+		helpCreateFleet(
+			helpCreateShip(provideRandomCoordinate()),
+		),
+		b,
+	)
+}
+
+func BenchmarkValidateFleetCollisionWithRandom2Ships(b *testing.B) {
+	var fleet []*Ship
+
+	for i := 0; i < 2; i++ {
+		fleet = append(
+			fleet,
+			helpCreateShip(
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+			),
+		)
+	}
+
+	benchmarkValidationOfFleet(fleet, b)
+}
+
+func BenchmarkValidateFleetCollisionWithRandom4Ships(b *testing.B) {
+	var fleet []*Ship
+
+	for i := 0; i < 4; i++ {
+		fleet = append(
+			fleet,
+			helpCreateShip(
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+			),
+		)
+	}
+
+	benchmarkValidationOfFleet(fleet, b)
+}
+
+func BenchmarkValidateFleetCollisionWithRandom16Ships(b *testing.B) {
+	var fleet []*Ship
+
+	for i := 0; i < 16; i++ {
+		fleet = append(
+			fleet,
+			helpCreateShip(
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+			),
+		)
+	}
+
+	benchmarkValidationOfFleet(fleet, b)
+}
+
+func BenchmarkValidateFleetCollisionWithRandom256Ships(b *testing.B) {
+	var fleet []*Ship
+
+	for i := 0; i < 256; i++ {
+		fleet = append(
+			fleet,
+			helpCreateShip(
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+				provideRandomCoordinate(),
+			),
+		)
+	}
+
+	benchmarkValidationOfFleet(fleet, b)
 }
