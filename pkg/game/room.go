@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// WarRoomMediator
+// WarRoomMediator game room with players
 type WarRoomMediator interface {
 	// JoinPlayer to room
 	JoinPlayer(p *Player) error
@@ -14,12 +14,12 @@ type WarRoomMediator interface {
 	GetActivePlayer() *Player
 }
 
-// WarRoom
+// WarRoom contains joined players
 type WarRoom struct {
 	players []*Player
 }
 
-// NewWarRoom
+// NewWarRoom of game session
 func NewWarRoom() *WarRoom {
 	return &WarRoom{players: make([]*Player, 0)}
 }

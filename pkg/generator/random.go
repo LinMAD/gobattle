@@ -7,18 +7,12 @@ import (
 
 // RandomBool return random bool
 func RandomBool() bool {
-	c := make(chan bool)
-	close(c)
-	select {
-	case <-c:
-		return true
-	case <-c:
-		return false
-	}
+	return rand.Intn(2) == 0
 }
 
 // RandomNum return random num between min and max
 func RandomNum(min, max int) int8 {
 	rand.Seed(time.Now().UnixNano())
+
 	return int8(rand.Intn(max-min) + min)
 }

@@ -47,7 +47,7 @@ func (g *Govern) OpenFire() game.Coordinate {
 	return *target
 }
 
-// CollectResultOfShot
+// CollectResultOfShot put result on the map
 func (g *Govern) CollectResultOfShot(t game.Coordinate, isHit bool) {
 	if isHit == false {
 		g.seaPlan[t.AxisY][t.AxisX] = game.GunMis

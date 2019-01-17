@@ -39,7 +39,7 @@ func TestNewWarRoom(t *testing.T) {
 	}
 
 	_, addErr = NewPlayer("P3", p2Fleet, wr)
-	if addErr != nil {
+	if addErr == nil {
 		t.Error("Expected error, in room can be only 2 players")
 	}
 }

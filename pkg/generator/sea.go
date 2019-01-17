@@ -1,9 +1,6 @@
 package generator
 
-import (
-	"github.com/LinMAD/gobattle/pkg/game"
-	"sync"
-)
+import "github.com/LinMAD/gobattle/pkg/game"
 
 // NewSeaField create sea map
 func NewSeaField(fleet []*game.Ship) [][]string {
@@ -22,19 +19,11 @@ func NewSeaField(fleet []*game.Ship) [][]string {
 		return seaPlan
 	}
 
-	var w int
-	var wg sync.WaitGroup
-	for w = 0; w < len(fleet); w++ {
-		wg.Add(1)
-		go func(w int, seaPlan [][]string) {
-			defer wg.Done()
-			for _, coordinate := range fleet[w].Location {
-				seaPlan[coordinate.AxisY][coordinate.AxisX] = game.FShip
-			}
-		}(w, seaPlan)
+	for _, s := range fleet {
+		for _, coordinate := range s.Location {
+			seaPlan[coordinate.AxisY][coordinate.AxisX] = game.FShip
+		}
 	}
-
-	wg.Wait()
 
 	return seaPlan
 }
