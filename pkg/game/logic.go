@@ -4,13 +4,18 @@ import (
 	"fmt"
 )
 
+// Field marks
 const (
-	// Field marks
-	FNone  string = "." // unknown field, empty
-	FShip  string = "#" // ship on field
-	GunHit string = "X" // shot cell or ships
-	GunMis string = "*" // missed shot
-	FSize  int    = 10  // size of battle field, max of X and Y axis (count from 0)
+	// FNone unknown field, empty
+	FNone string = "."
+	// FShip ship on field
+	FShip string = "#"
+	// GunHit shot cell or ships
+	GunHit string = "X"
+	// GunMis missed shot
+	GunMis string = "*"
+	// FSize size of battle field, max of X and Y axis (count from 0)
+	FSize int = 10
 )
 
 // ShipTypes in fleet, each represent one ship

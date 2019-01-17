@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	playerName string
+	playerName  string
 	playerFleet []*game.Ship
 )
 
@@ -34,7 +34,7 @@ func init() {
 func main() {
 	// create new game
 	gameMaster, newGameErr := pkg.NewGame(
-		pkg.GameSettings{PlayerName:  playerName, PlayerFleet: playerFleet},
+		pkg.GameSettings{PlayerName: playerName, PlayerFleet: playerFleet},
 	)
 	if newGameErr != nil {
 		log.Fatalln(newGameErr)

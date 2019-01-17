@@ -2,7 +2,7 @@ package game
 
 import "fmt"
 
-// PlayerColleague
+// PlayerColleague basic interface to store players in session
 type PlayerColleague interface {
 	GetName() string
 	GetFleet() []*Ship
@@ -10,7 +10,7 @@ type PlayerColleague interface {
 	GunShoot(c Coordinate) bool
 }
 
-// Player
+// Player information
 type Player struct {
 	// isActive player
 	isActive bool
@@ -24,7 +24,7 @@ type Player struct {
 	lastFireCoordinate *Coordinate
 }
 
-// NewPlayer
+// NewPlayer create new player and add to game room
 func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, err error) {
 	p = &Player{
 		name: name,
@@ -69,7 +69,10 @@ func NewPlayer(name string, fleet []*Ship, warRoom WarRoomMediator) (p *Player, 
 	}
 
 	p.fleet = fleet
-	p.room.JoinPlayer(p)
+	joinErr := p.room.JoinPlayer(p)
+	if joinErr != nil {
+		return nil, joinErr
+	}
 
 	return p, nil
 }

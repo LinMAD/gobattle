@@ -77,4 +77,3 @@ func BenchmarkCreateShipSize5(b *testing.B) {
 func BenchmarkCreateShipSize6(b *testing.B) {
 	benchmarkCreateShip(6, b)
 }
-

@@ -163,8 +163,8 @@ func helpCreateFleet(ship ...*Ship) []*Ship {
 
 func provideRandomCoordinate() Coordinate {
 	return Coordinate{
-		int8(rand.Intn(FSize-1)),
-		int8(rand.Intn(FSize-1)),
+		int8(rand.Intn(FSize - 1)),
+		int8(rand.Intn(FSize - 1)),
 	}
 }
 

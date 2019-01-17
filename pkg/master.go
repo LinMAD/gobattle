@@ -56,7 +56,7 @@ func NewGame(settings GameSettings) (*GameMaster, error) {
 	return gp, nil
 }
 
-// ShootInCoordinate
+// ShootInCoordinate provide points hit ship if it's there
 func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	var isFirstPlayerShot bool
 
