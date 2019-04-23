@@ -37,36 +37,36 @@ type GameMaster struct {
 // NewGame creates game to play
 func NewGame(settings GameSettings) (*GameMaster, error) {
 	var errPlayer error
-	gp := &GameMaster{
+	gm := &GameMaster{
 		room:         game.NewWarRoom(),
 		StillPlaying: true,
 		bot:          ai.NewGovern("Govern"),
 	}
 
-	_, errPlayer = game.NewPlayer(settings.PlayerName, settings.PlayerFleet, gp.room)
+	_, errPlayer = game.NewPlayer(settings.PlayerName, settings.PlayerFleet, gm.room)
 	if errPlayer != nil {
 		return nil, errPlayer
 	}
 
-	_, errPlayer = game.NewPlayer(gp.bot.GetName(), generator.NewFleet(), gp.room)
+	_, errPlayer = game.NewPlayer(gm.bot.GetName(), generator.NewFleet(), gm.room)
 	if errPlayer != nil {
 		return nil, errPlayer
 	}
 
-	return gp, nil
+	return gm, nil
 }
 
 // ShootInCoordinate provide points hit ship if it's there
-func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
+func (gm *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 	var isFirstPlayerShot bool
 
 	// Here can be tricky
 	// if next turn not a build in bot then
 	// return only if shot hit a ship
-	nextPlayer := gp.room.GetActivePlayer()
-	if nextPlayer.GetName() != gp.bot.GetName() {
+	nextPlayer := gm.room.GetActivePlayer()
+	if nextPlayer.GetName() != gm.bot.GetName() {
 		isFirstPlayerShot = nextPlayer.GunShoot(target)
-		gp.checkPlayerFleet(gp.room.GetOppositePlayer(nextPlayer.GetName()))
+		gm.checkPlayerFleet(gm.room.GetOppositePlayer(nextPlayer.GetName()))
 		if isFirstPlayerShot {
 			return isFirstPlayerShot
 		}
@@ -74,19 +74,20 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 
 	// So first player loosed initiative
 	// Now bot will try shot all ships while first player waits
-	nextPlayer = gp.room.GetActivePlayer()
-	oppositePlayer := gp.room.GetOppositePlayer(nextPlayer.GetName())
+	nextPlayer = gm.room.GetActivePlayer()
+	oppositePlayer := gm.room.GetOppositePlayer(nextPlayer.GetName())
 	for {
 		// AI did action
-		targetToHit := gp.bot.OpenFire()
+		targetToHit := gm.bot.OpenFire()
 		isBotHit := nextPlayer.GunShoot(targetToHit)
 		// Collect result for bot
-		gp.bot.CollectResultOfShot(targetToHit, isBotHit)
+		gm.bot.CollectResultOfShot(targetToHit, isBotHit)
+		render.AddOrUpdate(render.Screen{Title: "Battle field of " + gm.bot.GetName(), BattleField: gm.bot.GetSeaPlan()})
 		// Check if bot win the game
-		gp.checkPlayerFleet(oppositePlayer)
+		gm.checkPlayerFleet(oppositePlayer)
 
 		// Ok if bot win or miss then return back control to player
-		if gp.StillPlaying == false || isBotHit == false {
+		if gm.StillPlaying == false || isBotHit == false {
 			break
 		}
 	}
@@ -95,14 +96,14 @@ func (gp *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 }
 
 // HandleHumanPlayer handle user input
-func (gp *GameMaster) HandleHumanPlayer(playerName string) {
+func (gm *GameMaster) HandleHumanPlayer(playerName string) {
 	var isHit bool
 
 	seaPlan := generator.NewSeaField(nil)
 	reader := bufio.NewReader(os.Stdin)
 	isNextCycle := false
 
-	for gp.StillPlaying {
+	for gm.StillPlaying {
 		render.ShowBattleField(
 			render.Screen{
 				Title:       "Battle field of " + playerName,
@@ -110,18 +111,46 @@ func (gp *GameMaster) HandleHumanPlayer(playerName string) {
 			},
 			isNextCycle,
 		)
-		fmt.Println("Enter coordinate to fire.")
 
+		fmt.Println("\n\nEnter coordinate to fire:")
 		target := game.Coordinate{}
-		fmt.Print("Target X coordinate: ")
-		xStr, _ := reader.ReadString('\n')
-		target.AxisX = clearHumanInput(xStr)
+		isHandled := map[string]bool{"Y": false, "X": false}
 
-		fmt.Print("Target Y coordinate: ")
-		yStr, _ := reader.ReadString('\n')
-		target.AxisY = clearHumanInput(yStr)
+		for {
+			// Handle Y input
+			if isHandled["Y"] == false {
+				fmt.Print("Target Y coordinate: ")
+				yStr, _ := reader.ReadString('\n')
+				target.AxisY = clearHumanInput(yStr)
 
-		isHit = gp.ShootInCoordinate(target)
+				if target.AxisY >= int8(game.FSize) {
+					fmt.Println("Incorrect Y coordinate, try one more time")
+					target.AxisY = 0
+					continue
+				}
+
+				isHandled["Y"] = true
+			}
+
+			// Handle X input
+			if isHandled["X"] == false {
+				fmt.Print("Target X coordinate: ")
+				xStr, _ := reader.ReadString('\n')
+				target.AxisX = clearHumanInput(xStr)
+
+				if target.AxisX >= int8(game.FSize) {
+					fmt.Println("Incorrect X coordinate, try one more time")
+					target.AxisX = 0
+					continue
+				}
+
+				isHandled["X"] = true
+			}
+
+			break
+		}
+
+		isHit = gm.ShootInCoordinate(target)
 		marker := seaPlan[target.AxisY][target.AxisX]
 		if marker != game.GunMis && marker != game.GunHit {
 			if isHit {
@@ -145,7 +174,7 @@ func clearHumanInput(input string) int8 {
 }
 
 // checkPlayerFleet check if game ended
-func (gp *GameMaster) checkPlayerFleet(p *game.Player) {
+func (gm *GameMaster) checkPlayerFleet(p *game.Player) {
 	fleetSize := len(p.GetFleet())
 
 	for _, s := range p.GetFleet() {
@@ -155,8 +184,8 @@ func (gp *GameMaster) checkPlayerFleet(p *game.Player) {
 	}
 
 	if fleetSize == 0 {
-		gp.StillPlaying = false
-		gp.GameEndReason = fmt.Sprintf("%s lossed whole fleet", p.GetName())
+		gm.StillPlaying = false
+		gm.GameEndReason = fmt.Sprintf("%s defeated, whole fleet destroyed", p.GetName())
 
 		return
 	}

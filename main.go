@@ -22,12 +22,11 @@ func init() {
 
 	// Setup player, name, fleet
 	playerFleet = generator.NewFleet()
-	render.ShowBattleField(
+	render.AddOrUpdate(
 		render.Screen{
 			Title:       playerName + " it's your fleet",
 			BattleField: generator.NewSeaField(playerFleet),
 		},
-		true,
 	)
 }
 
@@ -43,6 +42,6 @@ func main() {
 	// Handle game of Human vs Bot
 	gameMaster.HandleHumanPlayer(playerName)
 
-	fmt.Println("--- GAME END ---")
+	fmt.Printf("\n\n--- GAME END ---")
 	fmt.Printf("--- %s --- \n", gameMaster.GameEndReason)
 }
