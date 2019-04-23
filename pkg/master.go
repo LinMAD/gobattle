@@ -113,15 +113,43 @@ func (gm *GameMaster) HandleHumanPlayer(playerName string) {
 		)
 
 		fmt.Println("\n\nEnter coordinate to fire:")
-
 		target := game.Coordinate{}
-		fmt.Print("Target X coordinate: ")
-		xStr, _ := reader.ReadString('\n')
-		target.AxisX = clearHumanInput(xStr)
+		isHandled := map[string]bool{"Y": false, "X": false}
 
-		fmt.Print("Target Y coordinate: ")
-		yStr, _ := reader.ReadString('\n')
-		target.AxisY = clearHumanInput(yStr)
+		for {
+			// Handle Y input
+			if isHandled["Y"] == false {
+				fmt.Print("Target Y coordinate: ")
+				yStr, _ := reader.ReadString('\n')
+				target.AxisY = clearHumanInput(yStr)
+
+				if target.AxisY >= int8(game.FSize) {
+					fmt.Println("Incorrect Y coordinate, try one more time")
+					target.AxisY = 0
+					continue
+				}
+
+				isHandled["Y"] = true
+			}
+
+
+			// Handle X input
+			if isHandled["X"] == false {
+				fmt.Print("Target X coordinate: ")
+				xStr, _ := reader.ReadString('\n')
+				target.AxisX = clearHumanInput(xStr)
+
+				if target.AxisX >= int8(game.FSize) {
+					fmt.Println("Incorrect X coordinate, try one more time")
+					target.AxisX = 0
+					continue
+				}
+
+				isHandled["X"] = true
+			}
+
+			break
+		}
 
 		isHit = gm.ShootInCoordinate(target)
 		marker := seaPlan[target.AxisY][target.AxisX]
