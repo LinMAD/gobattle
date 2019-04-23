@@ -8,3 +8,6 @@ test:
 
 pre_build: lint test
 	$(info Linting and testing)
+
+build:
+	go build .
