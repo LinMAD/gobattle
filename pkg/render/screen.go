@@ -70,7 +70,7 @@ func ShowBattleField(s Screen, clearScreen bool) {
 				createdScreens[nI].buildHeader(),
 			)
 
-			for y := game.FSize - 1; y != 0; y-- {
+			for y := game.FSize - 1; y != -1; y-- {
 				screenBuffer += fmt.Sprintf(
 					"\n%s    %s",
 					createdScreens[i].buildRow(y),
@@ -92,7 +92,7 @@ func ShowBattleField(s Screen, clearScreen bool) {
 			screenBuffer += fmt.Sprintf("\n\n%s", createdScreens[i].buildTitle())
 			screenBuffer += fmt.Sprintf("\n%s", createdScreens[i].buildHeader())
 
-			for y := game.FSize - 1; y != 0; y-- {
+			for y := game.FSize - 1; y != -1; y-- {
 				screenBuffer += fmt.Sprintf(
 					"\n%s", createdScreens[i].buildRow(y))
 			}

@@ -82,7 +82,7 @@ func (gm *GameMaster) ShootInCoordinate(target game.Coordinate) bool {
 		isBotHit := nextPlayer.GunShoot(targetToHit)
 		// Collect result for bot
 		gm.bot.CollectResultOfShot(targetToHit, isBotHit)
-		render.AddOrUpdate(render.Screen{Title: "Battle field of " + gm.bot.GetName(), BattleField: gm.bot.GetSeaPlan()})
+		render.AddOrUpdate(render.Screen{Title: "Battlefield of " + gm.bot.GetName(), BattleField: gm.bot.GetSeaPlan()})
 		// Check if bot win the game
 		gm.checkPlayerFleet(oppositePlayer)
 
@@ -106,7 +106,7 @@ func (gm *GameMaster) HandleHumanPlayer(playerName string) {
 	for gm.StillPlaying {
 		render.ShowBattleField(
 			render.Screen{
-				Title:       "Battle field of " + playerName,
+				Title:       "Battlefield of " + playerName,
 				BattleField: seaPlan,
 			},
 			isNextCycle,
