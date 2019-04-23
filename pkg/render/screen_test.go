@@ -7,9 +7,9 @@ import (
 	"testing"
 )
 
-var ts * Screen
+var ts *Screen
 
-func init()  {
+func init() {
 	ts = new(Screen)
 	ts.Title = "Test title of screen"
 	ts.BattleField = generator.NewSeaField(nil)

@@ -7,7 +7,7 @@ import (
 
 var createdScreens []Screen
 
-func init()  {
+func init() {
 	if createdScreens == nil {
 		createdScreens = make([]Screen, 0)
 	}
@@ -22,7 +22,7 @@ type Screen struct {
 }
 
 // AddOrUpdate for rendering
-func AddOrUpdate(s Screen)  {
+func AddOrUpdate(s Screen) {
 	isNew := true
 	for i, cs := range createdScreens {
 		if cs.Title == s.Title {
@@ -44,21 +44,21 @@ func ShowBattleField(s Screen, clearScreen bool) {
 	lenScreens := len(createdScreens)
 
 	for i := 0; i < lenScreens; i++ {
-		nI := i+1
+		nI := i + 1
 		if lenScreens <= nI {
 			break
 		}
 
 		/**
-			Deeding on one or two fields will be assembled sections
-			1. Title (Player name and field)
-			2. Header
-			3. Field rows (With left tile and coordinates)
-			4. Footer tile
-			5. Footer with coordinates
-		 */
+		Deeding on one or two fields will be assembled sections
+		1. Title (Player name and field)
+		2. Header
+		3. Field rows (With left tile and coordinates)
+		4. Footer tile
+		5. Footer with coordinates
+		*/
 
-		if nI % 2 == 0 {
+		if nI%2 == 0 {
 			screenBuffer += fmt.Sprintf(
 				"\n%s               %s",
 				createdScreens[i].buildTitle(),

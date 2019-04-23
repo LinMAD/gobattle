@@ -132,7 +132,6 @@ func (gm *GameMaster) HandleHumanPlayer(playerName string) {
 				isHandled["Y"] = true
 			}
 
-
 			// Handle X input
 			if isHandled["X"] == false {
 				fmt.Print("Target X coordinate: ")
